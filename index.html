@@ -114,11 +114,8 @@
             <button id="btn-cerrar-sesion" class="hidden flex items-center space-x-1 px-3 py-1.5 rounded-full bg-stone-200/60 hover:bg-stone-200 text-xs text-stone-700 transition-all font-semibold" title="Cerrar sesión y volver a la lista de perfiles">
                 <span>🚪 Cerrar sesión</span>
             </button>
-            <button onclick="irAVistaDiscipulados()" class="flex items-center space-x-1 px-3 py-1.5 rounded-full bg-senda-oliva/10 hover:bg-senda-oliva/20 text-xs text-senda-oliva transition-all font-semibold">
-                <span>📚 Discipulados</span>
-            </button>
-            <button onclick="irAEncuentroEspiritu()" class="flex items-center space-x-1 px-3 py-1.5 rounded-full bg-senda-oro/10 hover:bg-senda-oro/20 text-xs text-senda-tierra transition-all font-semibold">
-                <span>🕊️ Encuentro</span>
+            <button onclick="irAEspacios()" class="flex items-center space-x-1 px-3 py-1.5 rounded-full bg-senda-oliva/10 hover:bg-senda-oliva/20 text-xs text-senda-oliva transition-all font-semibold">
+                <span>✨ Espacios</span>
             </button>
             <button onclick="abrirGlosario()" class="text-xs uppercase tracking-wider font-semibold text-senda-tierra hover:underline bg-senda-cremaFuerte/60 px-3 py-1.5 rounded-xl">
                 📙 Glosario
@@ -218,6 +215,10 @@
         // Efímero a propósito — no pertenece a ningún perfil, arranca en 0 cada
         // vez que se entra a la guía.
         let slideBienvenidaGuiada = 0;
+        // Mismo patrón que faseAntesDeDiscipulado/Encuentro/BienvenidaGuiada —
+        // deben resetearse en cargarPerfil(), mismo bug potencial documentado.
+        let faseAntesDeEspacios = null;
+        let faseAntesDeGracia = null;
 
         // ===================================================================
         // DATOS TEOLÓGICOS Y DE CONTENIDO PASTORAL
@@ -929,13 +930,100 @@
             {
                 icono: '🌿',
                 titulo: 'Un camino guiado, paso a paso',
-                texto: 'Un retiro de 14 días a tu ritmo, enseñanzas para tu proceso, y un espacio para crecer en comunión con el Espíritu Santo — todo cuando estés listo.'
+                texto: 'Un retiro de 14 días a tu ritmo, enseñanzas para tu proceso, y un espacio para crecer en comunión con el Espíritu Santo — todo cuando estés listo, nunca de golpe.'
             },
             {
                 icono: '🕊️',
                 titulo: 'Paso a paso. En amor. Bajo el señorío de Cristo.',
                 texto: '',
                 esCierre: true
+            }
+        ];
+
+        // "De Gracia Recibisteis, Dad de Gracia" (Mateo 10:8) — tercer espacio
+        // independiente (junto a Discipulados y Encuentro, ver VistaEspacios()).
+        // 7 módulos, uno por cada pilar que pidió el cliente: señorío, verdad,
+        // testimonio, enseñanza, corrección, amor, gracia — en un orden con
+        // progresión: primero rendirse bien, después dar bien. El módulo 5
+        // (corrección) pide más cuidado de tono que los demás — ver nota en
+        // el documento de contexto antes de tocar su texto.
+        const MODULOS_GRACIA_RECIBISTEIS = [
+            {
+                id: 'bajo_su_senorio',
+                orden: 1,
+                icono: '👑',
+                nombre: 'Bajo Su Señorío',
+                ancla: 'Gálatas 2:20',
+                ensenanza: `Antes de pensar en dar algo a alguien más, hay una pregunta que no se puede saltar: ¿de quién es tu vida? Pablo no dice "sigo intentando vivir mejor" — dice "ya no vivo yo, mas vive Cristo en mí" (Gálatas 2:20). No se puede compartir una gracia que todavía no se ha recibido de verdad. Todo lo que este espacio propone — hablar verdad, corregir, enseñar, amar — solo tiene raíz si primero hay una rendición honesta a Cristo como Señor, no como consejero ocasional.`,
+                practica: `En silencio, dile a Cristo en tus propias palabras: "Reconozco tu señorío sobre esta área específica de mi vida ahora mismo". Escribe cuál fue esa área.`,
+                conexion: `Dios espera que demos desde la abundancia de una vida rendida, no desde el esfuerzo de una vida que actúa por su cuenta (Juan 15:5).`,
+                citas: 'Gálatas 2:20, Juan 15:5'
+            },
+            {
+                id: 'la_verdad_que_libera',
+                orden: 2,
+                icono: '🔦',
+                nombre: 'La Verdad que Libera',
+                ancla: 'Efesios 4:15',
+                ensenanza: `Pablo no separa la verdad del amor — las une en una sola frase: "siguiendo la verdad en amor" (Efesios 4:15). Decir la verdad sin amor es dureza; decir amor sin verdad es complacencia vacía. Ninguna de las dos edifica. Antes de decirle algo sincero a alguien, vale la pena preguntarse: ¿esto nace de un deseo genuino de su bien, o de mi necesidad de tener razón?`,
+                practica: `Piensa en una conversación pendiente donde te ha costado ser honesto. Escribe qué verdad necesitás decir, y qué haría falta para decirla con ternura genuina, no con superioridad.`,
+                conexion: `Dios quiere que crezcamos "en todo" hacia Cristo, y eso solo pasa en comunidades donde la verdad y el amor caminan juntos (Efesios 4:15-16).`,
+                citas: 'Efesios 4:15-16'
+            },
+            {
+                id: 'el_poder_del_testimonio',
+                orden: 3,
+                icono: '🎙️',
+                nombre: 'El Poder del Testimonio',
+                ancla: 'Apocalipsis 12:11',
+                ensenanza: `Tu historia con Dios no es un dato privado — es un arma espiritual. Apocalipsis dice que los creyentes vencieron "por medio de la sangre del Cordero y de la palabra del testimonio de ellos" (Apocalipsis 12:11). No hace falta una historia dramática. Hace falta una historia VERDADERA, contada con humildad. Si ya escribiste tu testimonio en esta app, ya tenés algo real para compartir — no como un logro tuyo, sino como evidencia de lo que Cristo hizo.`,
+                practica: `Si ya escribiste tu testimonio en "Progreso y Testimonio", releelo ahora. Escribe con quién específico sentís que Dios te está invitando a compartirlo.`,
+                conexion: `Dios usa historias reales, no perfectas, para alcanzar a otros — el testimonio no depende de la elocuencia, depende de la verdad (Apocalipsis 12:11).`,
+                citas: 'Apocalipsis 12:11'
+            },
+            {
+                id: 'ensenar_lo_que_recibiste',
+                orden: 4,
+                icono: '📖',
+                nombre: 'Enseñar lo que Recibiste',
+                ancla: 'Mateo 28:19-20',
+                ensenanza: `La Gran Comisión no fue dada solo a los apóstoles — fue dada a todo el que ha sido hecho discípulo, para hacer discípulos (Mateo 28:19-20). Enseñar no significa tener todas las respuestas. Significa caminar un paso adelante de alguien y compartir honestamente lo que Dios te fue mostrando en el camino. Si atravesaste un discipulado en esta app, ya tenés algo real para pasar a otro.`,
+                practica: `Piensa en alguien que está un paso atrás tuyo en algo que ya atravesaste. Escribe una frase simple de lo que le dirías, sin sonar a sermón.`,
+                conexion: `Dios diseñó el crecimiento espiritual para pasar de persona a persona, no solo de libro a persona (2 Timoteo 2:2).`,
+                citas: 'Mateo 28:19-20, 2 Timoteo 2:2'
+            },
+            {
+                id: 'corregir_con_gracia',
+                orden: 5,
+                icono: '🧭',
+                nombre: 'Corregir con Gracia',
+                ancla: 'Gálatas 6:1',
+                ensenanza: `Pablo es muy específico sobre CÓMO corregir: "si alguno fuere sorprendido en alguna falta, vosotros que sois espirituales, restauradle con espíritu de mansedumbre, considerándote a ti mismo, no sea que tú también seas tentado" (Gálatas 6:1). La palabra clave es "restaurar", no "señalar". Y la actitud es mansedumbre, no superioridad — recordando que vos también podés caer. La corrección que no nace del amor y de reconocerte igual de necesitado de gracia, no es corrección bíblica — es solo juicio.`,
+                practica: `Si hay alguien a quien sentís que necesitás decirle algo difícil, antes de hacerlo, escribe: ¿lo estás haciendo con espíritu de restauración, o de superioridad? Sé honesto contigo.`,
+                conexion: `Dios no llama a corregir desde una torre — llama a restaurar desde el mismo nivel, recordando la propia necesidad de gracia (Gálatas 6:1-2).`,
+                citas: 'Gálatas 6:1-2'
+            },
+            {
+                id: 'el_amor_que_actua',
+                orden: 6,
+                icono: '🤝',
+                nombre: 'El Amor que Actúa',
+                ancla: '1 Juan 3:18',
+                ensenanza: `Juan es directo: "no amemos de palabra ni de lengua, sino de hecho y en verdad" (1 Juan 3:18). El amor cristiano no se mide en sentimientos ni en buenas intenciones — se mide en lo que realmente se hace por otro. A veces dar gracia es simplemente una acción concreta: una llamada, un tiempo, una ayuda práctica, sin esperar nada a cambio.`,
+                practica: `Pensá en una persona específica. Escribe UNA acción concreta (no un sentimiento) que podrías hacer esta semana para amarla de hecho.`,
+                conexion: `Dios mide el amor real por lo que cuesta dar, no por lo que se siente al pensarlo (1 Juan 3:16-18).`,
+                citas: '1 Juan 3:16-18'
+            },
+            {
+                id: 'dar_la_gracia_que_recibiste',
+                orden: 7,
+                icono: '🎁',
+                nombre: 'Dar la Gracia que Recibiste',
+                ancla: 'Mateo 10:8',
+                ensenanza: `Jesús envió a sus discípulos con una instrucción sencilla y radical: "de gracia recibisteis, dad de gracia" (Mateo 10:8). No dijo "ganaron el derecho de dar" — dijo que RECIBIERON gratis, así que debían DAR gratis. Toda la gracia que experimentaste en este camino — el perdón, el descanso, la sanidad, la comunión — no fue para guardarla. Fue para que la sigas pasando, de la misma manera gratuita en que te llegó a vos.`,
+                practica: `Cierra este espacio con una oración simple: "Señor, ¿a quién querés que le dé, gratis, algo de lo que yo recibí gratis de vos?". Escribe el nombre o la situación que venga a tu mente.`,
+                conexion: `Dios espera que la gracia recibida siga fluyendo hacia otros — no que se detenga en nosotros (Mateo 10:8, 2 Corintios 1:3-4).`,
+                citas: 'Mateo 10:8, 2 Corintios 1:3-4'
             }
         ];
 
@@ -1077,6 +1165,19 @@
                 // explícitamente solo al crear un perfil nuevo (registrarPerfilInicial),
                 // nunca al recargar un perfil existente ni al reiniciar el camino.
                 bienvenidaGuiadaVista: false,
+                // Invitación contextual a Encuentro, disparada UNA vez tras el
+                // primer testimonio guardado (ver VistaEspacios()). A propósito
+                // NO se reinicia con reiniciarCamino() — "una vez" significa una
+                // vez en la vida del perfil, no una vez por estación. Ver la
+                // lista de campos preservados dentro de reiniciarCamino().
+                sugerenciaEncuentroMostrada: false,
+                // "De Gracia Recibisteis, Dad de Gracia" — mismo patrón que
+                // Encuentro: respuestas por módulo, sin bloqueo entre ellos.
+                // A diferencia de sugerenciaEncuentroMostrada, esto SÍ se
+                // reinicia con reiniciarCamino() (como Encuentro).
+                respuestasGracia: {},
+                moduloActivoGraciaId: null,
+                moduloMaxGracia: 1,
                 entregaActivaId: null,
                 // Hash SHA-256 (nunca el texto plano) de la contraseña sencilla que el
                 // propio usuario define al entrar por primera vez a su perfil — ver
@@ -1201,6 +1302,10 @@
                 if (this.datos.nivelMaxEncuentro === undefined) this.datos.nivelMaxEncuentro = 1;
                 if (!this.datos.decisionesLectura) this.datos.decisionesLectura = {};
                 if (this.datos.bienvenidaGuiadaVista === undefined) this.datos.bienvenidaGuiadaVista = false;
+                if (this.datos.sugerenciaEncuentroMostrada === undefined) this.datos.sugerenciaEncuentroMostrada = false;
+                if (!this.datos.respuestasGracia) this.datos.respuestasGracia = {};
+                if (this.datos.moduloActivoGraciaId === undefined) this.datos.moduloActivoGraciaId = null;
+                if (this.datos.moduloMaxGracia === undefined) this.datos.moduloMaxGracia = 1;
 
                 // Corrección de bug: faseAntesDeDiscipulado es una variable compartida
                 // (no pertenece a ningún perfil). Si no se limpia aquí, cambiar de
@@ -1210,6 +1315,8 @@
                 faseAntesDeDiscipulado = null;
                 faseAntesDeEncuentro = null; // mismo motivo, mismo bug potencial
                 faseAntesDeBienvenidaGuiada = null;
+                faseAntesDeEspacios = null;
+                faseAntesDeGracia = null;
                 slideBienvenidaGuiada = 0;
 
                 this.guardarTodo();
@@ -1256,6 +1363,7 @@
                     const sintomasPasados = this.datos.sintomasCriticos || [];
                     const cronicidadPrevia = this.datos.conteoCronicidad || {};
                     const pinHashPrevio = this.datos.pinHash || null;
+                    const sugerenciaEncuentroPrevia = this.datos.sugerenciaEncuentroMostrada || false;
 
                     this.perfiles[this.perfilActivo] = obtenerPerfilBase(this.perfilActivo);
                     this.perfiles[this.perfilActivo].historicoRuta = historico;
@@ -1263,6 +1371,7 @@
                     this.perfiles[this.perfilActivo].sintomasCicloAnterior = sintomasPasados;
                     this.perfiles[this.perfilActivo].conteoCronicidad = cronicidadPrevia;
                     this.perfiles[this.perfilActivo].pinHash = pinHashPrevio;
+                    this.perfiles[this.perfilActivo].sugerenciaEncuentroMostrada = sugerenciaEncuentroPrevia;
 
                     this.datos = this.perfiles[this.perfilActivo];
                     this.guardar();
@@ -1378,6 +1487,9 @@
                         case 'vista_entrega': progHeader.innerText = "Discipulado — Entrega"; break;
                         case 'encuentro_biblioteca': progHeader.innerText = "Un Encuentro con el Espíritu Santo"; break;
                         case 'encuentro_nivel': progHeader.innerText = (NIVELES_ENCUENTRO_ESPIRITU.find(n => n.id === this.datos.nivelActivoEncuentroId) || {}).nombre || "Un Encuentro con el Espíritu Santo"; break;
+                        case 'espacios': progHeader.innerText = "Espacios"; break;
+                        case 'gracia_biblioteca': progHeader.innerText = "De Gracia Recibisteis, Dad de Gracia"; break;
+                        case 'gracia_modulo': progHeader.innerText = (MODULOS_GRACIA_RECIBISTEIS.find(m => m.id === this.datos.moduloActivoGraciaId) || {}).nombre || "De Gracia Recibisteis, Dad de Gracia"; break;
                         default: progHeader.innerText = "";
                     }
                 }
@@ -1400,6 +1512,9 @@
                     case 'vista_entrega': viewport.innerHTML = VistaEntregaDiscipulado(); break;
                     case 'encuentro_biblioteca': viewport.innerHTML = VistaEncuentroEspiritu(); break;
                     case 'encuentro_nivel': viewport.innerHTML = VistaNivelEncuentro(); break;
+                    case 'espacios': viewport.innerHTML = VistaEspacios(); break;
+                    case 'gracia_biblioteca': viewport.innerHTML = VistaDeGraciaRecibisteis(); break;
+                    case 'gracia_modulo': viewport.innerHTML = VistaModuloGracia(); break;
                     default: viewport.innerHTML = VistaBienvenida();
                 }
             }
@@ -1565,6 +1680,86 @@
             }
             slideBienvenidaGuiada = 0;
             SendaEstado.irAFase('bienvenida_guiada');
+        }
+
+        // --- "Espacios": menú consolidado de Discipulados / Encuentro / Gracia ---
+        function irAEspacios() {
+            if (!SendaEstado.perfilActivo) {
+                alert("Primero selecciona o crea tu perfil para ver los espacios disponibles.");
+                return;
+            }
+            const fasesDelModulo = ['espacios'];
+            if (!fasesDelModulo.includes(SendaEstado.datos.faseActual)) {
+                faseAntesDeEspacios = SendaEstado.datos.faseActual;
+            }
+            SendaEstado.irAFase('espacios');
+        }
+
+        function salirDeEspacios() {
+            if (faseAntesDeEspacios) {
+                const destino = faseAntesDeEspacios;
+                faseAntesDeEspacios = null;
+                SendaEstado.irAFase(destino);
+            } else if (SendaEstado.datos.tipoRuta) {
+                SendaEstado.irAFase('sendero_dashboard');
+            } else {
+                SendaEstado.irAFase('bienvenida');
+            }
+        }
+
+        // --- "De Gracia Recibisteis, Dad de Gracia" ---
+        function irADeGraciaRecibisteis() {
+            if (!SendaEstado.perfilActivo) {
+                alert("Primero selecciona o crea tu perfil para acceder a este espacio.");
+                return;
+            }
+            const fasesDelModulo = ['gracia_biblioteca', 'gracia_modulo'];
+            if (!fasesDelModulo.includes(SendaEstado.datos.faseActual)) {
+                faseAntesDeGracia = SendaEstado.datos.faseActual;
+            }
+            SendaEstado.irAFase('gracia_biblioteca');
+        }
+
+        function salirDeGracia() {
+            if (faseAntesDeGracia) {
+                const destino = faseAntesDeGracia;
+                faseAntesDeGracia = null;
+                SendaEstado.irAFase(destino);
+            } else if (SendaEstado.datos.tipoRuta) {
+                SendaEstado.irAFase('sendero_dashboard');
+            } else {
+                SendaEstado.irAFase('bienvenida');
+            }
+        }
+
+        function irAModuloGracia(moduloId) {
+            SendaEstado.datos.moduloActivoGraciaId = moduloId;
+            SendaEstado.irAFase('gracia_modulo');
+        }
+
+        function guardarRespuestaGracia(moduloId) {
+            const txt = document.getElementById('texto-respuesta-gracia');
+            const btn = document.getElementById('btn-guardar-respuesta-gracia');
+            if (!txt || !btn) return;
+            if (!SendaEstado.datos.respuestasGracia) SendaEstado.datos.respuestasGracia = {};
+            SendaEstado.datos.respuestasGracia[moduloId] = textClean(txt.value);
+
+            // Avanza el "siguiente sugerido" — nunca bloquea, solo orienta.
+            const modulo = MODULOS_GRACIA_RECIBISTEIS.find(m => m.id === moduloId);
+            if (modulo && (SendaEstado.datos.moduloMaxGracia || 1) <= modulo.orden) {
+                SendaEstado.datos.moduloMaxGracia = Math.min(modulo.orden + 1, MODULOS_GRACIA_RECIBISTEIS.length);
+            }
+            SendaEstado.guardar();
+
+            const habiaTexto = SendaEstado.datos.respuestasGracia[moduloId] !== "";
+            btn.innerText = "¡Respuesta Guardada!";
+            btn.classList.add('bg-emerald-600');
+            btn.classList.remove('bg-senda-oliva');
+            setTimeout(() => {
+                btn.innerText = habiaTexto ? "Actualizar mi Respuesta" : "Guardar mi Respuesta";
+                btn.classList.remove('bg-emerald-600');
+                btn.classList.add('bg-senda-oliva');
+            }, 2000);
         }
 
         // Elimina un perfil por completo (y su progreso) de este dispositivo, previa
@@ -3257,6 +3452,153 @@
                     <div class="pt-2 flex flex-wrap justify-center gap-3">
                         <button onclick="irAEncuentroEspiritu()" class="text-xs text-stone-600 hover:text-stone-600 underline">← Biblioteca de Encuentro</button>
                         ${siguiente ? `<button onclick="irANivelEncuentro('${siguiente.id}')" class="text-xs text-senda-oliva hover:underline font-semibold">Siguiente: ${siguiente.nombre} →</button>` : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- "Espacios": menú consolidado de Discipulados / Encuentro / Gracia ---
+        // Un solo botón en el header ("✨ Espacios") en vez de 3 píldoras
+        // separadas — evita volver a apretar el header cada vez que se agrega
+        // un espacio nuevo (ver sección 4.7 sobre el problema de alineación
+        // ya resuelto una vez). La tarjeta de Encuentro puede mostrar
+        // "Sugerido para ti" — efecto secundario intencional, ver comentario
+        // dentro de la función.
+        function VistaEspacios() {
+            const mostrarSugerenciaEncuentro = !!SendaEstado.datos.testimonioEstacion && !SendaEstado.datos.sugerenciaEncuentroMostrada;
+            if (mostrarSugerenciaEncuentro) {
+                // Se marca "ya vista" en el momento exacto en que se muestra —
+                // para que sea de verdad UNA vez en la vida del perfil (no una
+                // vez por estación, y no cada vez que se entra a esta pantalla).
+                // Excepción documentada a "las Vista*() no mutan datos" — acá
+                // es necesaria porque "mostrarla una vez" solo se puede saber
+                // en el momento exacto del render.
+                SendaEstado.datos.sugerenciaEncuentroMostrada = true;
+                SendaEstado.guardar();
+            }
+
+            const espacios = [
+                { icono: '📚', nombre: 'Discipulados', desc: '17 series de enseñanza para tu proceso específico', onclick: 'irAVistaDiscipulados()', destacar: false },
+                { icono: '🕊️', nombre: 'Encuentro con el Espíritu Santo', desc: '6 niveles de comunión, siguiendo el patrón de Jesús', onclick: 'irAEncuentroEspiritu()', destacar: mostrarSugerenciaEncuentro },
+                { icono: '🎁', nombre: 'De Gracia Recibisteis, Dad de Gracia', desc: '7 módulos para aprender a dar a otros lo que recibiste', onclick: 'irADeGraciaRecibisteis()', destacar: false }
+            ];
+
+            return `
+                <div class="space-y-8">
+                    <div class="flex justify-start">
+                        <button onclick="salirDeEspacios()" class="text-xs text-stone-600 hover:text-stone-600 underline">← Volver a mi caminar diario</button>
+                    </div>
+                    <div class="text-center space-y-2">
+                        <span class="text-xs uppercase tracking-[0.2em] text-senda-tierra font-semibold">✨ Espacios</span>
+                        <h2 class="serif-title text-3xl md:text-4xl font-medium text-senda-texto">Para ir más profundo</h2>
+                        <p class="text-sm text-stone-600 font-light max-w-md mx-auto leading-relaxed">Cuando quieras, a tu ritmo — nada acá es obligatorio para seguir tu caminar diario.</p>
+                    </div>
+
+                    <div class="space-y-4">
+                        ${espacios.map(e => `
+                        <button onclick="${e.onclick}" class="opcion-btn w-full text-left p-6 rounded-[2rem] border-2 ${e.destacar ? 'border-senda-oro' : 'border-stone-200'} bg-white hover:border-senda-oliva/50 hover:shadow-md transition-all space-y-2 relative">
+                            ${e.destacar ? `<span class="absolute -top-2.5 right-5 text-[9px] font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-senda-oro text-white">Sugerido para ti</span>` : ''}
+                            <div class="flex items-center gap-3">
+                                <span class="text-3xl">${e.icono}</span>
+                                <h3 class="serif-title text-lg font-semibold text-senda-texto">${e.nombre}</h3>
+                            </div>
+                            <p class="text-sm text-stone-600 font-light leading-relaxed">${e.desc}</p>
+                        </button>
+                        `).join('')}
+                    </div>
+
+                    <div class="pt-2 text-center">
+                        <button onclick="salirDeEspacios()" class="text-xs text-stone-600 hover:text-stone-600 underline">← Volver a mi caminar diario</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- "De Gracia Recibisteis, Dad de Gracia": Vista 1, Biblioteca de módulos ---
+        function VistaDeGraciaRecibisteis() {
+            const modulos = [...MODULOS_GRACIA_RECIBISTEIS].sort((a, b) => a.orden - b.orden);
+            const respuestas = SendaEstado.datos.respuestasGracia || {};
+            return `
+                <div class="space-y-8">
+                    <div class="flex justify-start">
+                        <button onclick="salirDeGracia()" class="text-xs text-stone-600 hover:text-stone-600 underline">← Volver a mi caminar diario</button>
+                    </div>
+                    <div class="text-center space-y-2">
+                        <span class="text-xs uppercase tracking-[0.2em] text-senda-tierra font-semibold">🎁 De Gracia Recibisteis, Dad de Gracia</span>
+                        <h2 class="serif-title text-3xl md:text-4xl font-medium text-senda-texto">Aprender a Dar lo que Recibiste</h2>
+                        <p class="text-sm text-stone-600 font-light max-w-md mx-auto leading-relaxed">"De gracia recibisteis, dad de gracia" (Mateo 10:8). Un módulo a la vez, para compartir con otros lo que Cristo ya te dio.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        ${modulos.map(modulo => {
+                            const completado = respuestas[modulo.id] && respuestas[modulo.id] !== "";
+                            return `
+                            <button onclick="irAModuloGracia('${modulo.id}')" class="opcion-btn text-left p-6 rounded-[2rem] border-2 border-stone-200 bg-white hover:border-senda-oro/50 hover:shadow-md transition-all space-y-3">
+                                <div class="flex items-start justify-between gap-2">
+                                    <span class="text-3xl block">${modulo.icono}</span>
+                                    ${completado ? `<span class="text-[9px] font-bold uppercase tracking-wider px-2 py-1 rounded-full bg-emerald-100 text-emerald-700 flex-shrink-0">✓ Con respuesta</span>` : `<span class="text-[9px] font-bold uppercase tracking-wider px-2 py-1 rounded-full bg-senda-fondo text-senda-tierra flex-shrink-0">Módulo ${modulo.orden}</span>`}
+                                </div>
+                                <h3 class="serif-title text-xl font-semibold text-senda-texto">${modulo.nombre}</h3>
+                                <p class="text-xs text-stone-600 font-light leading-relaxed">📖 ${modulo.ancla}</p>
+                            </button>
+                            `;
+                        }).join('')}
+                    </div>
+
+                    <div class="pt-2 text-center">
+                        <button onclick="salirDeGracia()" class="text-xs text-stone-600 hover:text-stone-600 underline">← Volver a mi caminar diario</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- "De Gracia Recibisteis, Dad de Gracia": Vista 2, Módulo individual ---
+        function VistaModuloGracia() {
+            const modulo = MODULOS_GRACIA_RECIBISTEIS.find(m => m.id === SendaEstado.datos.moduloActivoGraciaId);
+            if (!modulo) {
+                return `
+                    <div class="text-center space-y-4 py-10">
+                        <p class="text-stone-600">No se encontró ese módulo.</p>
+                        <button onclick="irADeGraciaRecibisteis()" class="text-senda-oliva underline text-sm">← Volver a la Biblioteca</button>
+                    </div>
+                `;
+            }
+            const respuestaGuardada = (SendaEstado.datos.respuestasGracia && SendaEstado.datos.respuestasGracia[modulo.id]) || "";
+            const modulos = [...MODULOS_GRACIA_RECIBISTEIS].sort((a, b) => a.orden - b.orden);
+            const siguiente = modulos.find(m => m.orden === modulo.orden + 1);
+
+            return `
+                <div class="space-y-6">
+                    <div class="flex flex-wrap justify-between items-center gap-2">
+                        <button onclick="irADeGraciaRecibisteis()" class="text-xs text-stone-600 hover:text-stone-600 underline">← Biblioteca</button>
+                        <button onclick="salirDeGracia()" class="text-xs text-stone-600 hover:text-stone-600 underline">Mi Caminar →</button>
+                    </div>
+
+                    <div class="text-center space-y-2">
+                        <span class="text-5xl block">${modulo.icono}</span>
+                        <span class="text-xs uppercase tracking-[0.2em] text-senda-tierra font-semibold">Módulo ${modulo.orden} de ${modulos.length}</span>
+                        <h2 class="serif-title text-3xl md:text-4xl font-medium text-senda-texto">${modulo.nombre}</h2>
+                        <p class="text-xs text-stone-600 font-light">📖 Basado en: ${modulo.ancla}</p>
+                    </div>
+
+                    <div class="bg-white rounded-[2rem] border border-stone-200 p-6 md:p-8 space-y-4">
+                        <p class="text-base text-senda-texto font-light leading-relaxed">${modulo.ensenanza}</p>
+                    </div>
+
+                    <div class="bg-senda-cremaFuerte/40 rounded-[2rem] border border-senda-oro/20 p-6 md:p-8 space-y-4">
+                        <span class="text-xs font-bold text-senda-tierra uppercase tracking-widest flex items-center gap-1.5">🎁 Ponlo en Práctica</span>
+                        <p class="text-sm text-stone-600 font-light leading-relaxed">${modulo.practica}</p>
+                        <textarea id="texto-respuesta-gracia" placeholder="Escribe aquí..." class="w-full p-4 text-base rounded-2xl border border-stone-200 focus:outline-none focus:border-senda-oro bg-white resize-none h-28 font-light leading-relaxed">${respuestaGuardada}</textarea>
+                        <button id="btn-guardar-respuesta-gracia" onclick="guardarRespuestaGracia('${modulo.id}')" class="w-full py-4 bg-senda-oliva hover:bg-opacity-95 text-white text-base font-bold rounded-2xl shadow-sm transition-all tracking-wide">
+                            ${respuestaGuardada ? "Actualizar mi Respuesta" : "Guardar mi Respuesta"}
+                        </button>
+                    </div>
+
+                    <p class="text-sm text-stone-600 font-light leading-relaxed text-center italic">${modulo.conexion}</p>
+
+                    <div class="pt-2 flex flex-wrap justify-center gap-3">
+                        <button onclick="irADeGraciaRecibisteis()" class="text-xs text-stone-600 hover:text-stone-600 underline">← Biblioteca</button>
+                        ${siguiente ? `<button onclick="irAModuloGracia('${siguiente.id}')" class="text-xs text-senda-oliva hover:underline font-semibold">Siguiente: ${siguiente.nombre} →</button>` : ''}
                     </div>
                 </div>
             `;
