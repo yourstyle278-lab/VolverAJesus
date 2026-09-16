@@ -15,7 +15,7 @@
 
 import { corsHeaders } from '../_shared/cors.ts';
 
-const GROQ_MODEL = 'llama-3.3-70b-versatile';
+const GROQ_MODEL = 'openai/gpt-oss-120b';
 const LONGITUD_MAXIMA_PREGUNTA = 1000;
 
 // --------------------------------------------------------------------------
