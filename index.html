@@ -191,6 +191,11 @@
         // ===================================================================
         let procesandoConfesion = false;
         let procesandoPregunta = false;
+        // Mismo patrón que procesandoConfesion/procesandoPregunta, pero para la
+        // llamada a la API de IA de "¿Qué Haría Jesús?" (ver sección de
+        // configuración más abajo). Evita doble envío mientras se espera
+        // respuesta de la red.
+        let procesandoPreguntaJesus = false;
         // Estado (solo en memoria, no persistido) de qué secciones del acordeón
         // del dashboard están abiertas — sobrevive a los re-renders de la sesión.
         let accordionState = {};
@@ -219,6 +224,30 @@
         // deben resetearse en cargarPerfil(), mismo bug potencial documentado.
         let faseAntesDeEspacios = null;
         let faseAntesDeGracia = null;
+        let faseAntesDeQueHariaJesus = null;
+
+        // ===================================================================
+        // CONFIGURACIÓN — "¿Qué Haría Jesús?" (backend en Supabase Edge Function)
+        // ===================================================================
+        // IMPORTANTE: la API key de Groq NUNCA vive en este archivo. La llamada
+        // real a Groq la hace la función de servidor en
+        // supabase/functions/que-haria-jesus/index.ts (ver ese archivo), donde
+        // la key se guarda como secret de Supabase (fuera del código fuente).
+        // Este archivo cliente solo necesita la URL de esa función y la ANON
+        // KEY del proyecto de Supabase — la anon key SÍ está diseñada para ser
+        // pública/visible en el cliente (protegida por su propia naturaleza,
+        // no es un secreto), a diferencia de la key de Groq.
+        //
+        // Reemplaza TU_PROJECT_REF por el ID de tu proyecto de Supabase
+        // (Project Settings → General → Reference ID), y SUPABASE_ANON_KEY por
+        // tu clave "anon" / "publishable" (Project Settings → API Keys).
+        // NOTA: a propósito 'let' y no 'const' — a diferencia de las constantes
+        // de contenido teológico (de solo lectura), esto es configuración que el
+        // cliente edita a mano, y test_harness.js necesita poder sustituirla
+        // temporalmente para probar la lógica de consultarQueHariaJesus() sin
+        // red real.
+        let SUPABASE_FUNCTION_URL = 'https://TU_PROJECT_REF.supabase.co/functions/v1/que-haria-jesus';
+        let SUPABASE_ANON_KEY = 'PEGA_AQUI_TU_ANON_KEY_DE_SUPABASE';
 
         // ===================================================================
         // DATOS TEOLÓGICOS Y DE CONTENIDO PASTORAL
@@ -883,6 +912,42 @@
                     { id: 'fe_4', titulo: 'Fase 4: Enseñar', tipo: 'Enseñar', contenido: 'Enseñar sobre el poder de Dios es guiar a la iglesia a no depender de métodos humanos, sino de la acción del Espíritu Santo. Quien ha visto la mano de Dios restaurar lo imposible testifica con sobriedad y firmeza, infundiendo esperanza en los corazones atribulados.', reto_asimilacion: 'Anima a un hermano que esté pasando por una enfermedad o crisis compartiendo una promesa de la Escritura.' },
                     { id: 'fe_5', titulo: 'Fase 5: Manifestar', tipo: 'Manifestar', contenido: 'El paralítico se levantó, tomó su lecho y salió a la vista de todos, de modo que todos se asombraron y glorificaron a Dios. La manifestación de la fe es un testimonio público que no busca el aplauso propio, sino que dirige la gloria de manera exclusiva al Padre.', reto_asimilacion: 'Asegúrate de que cada victoria o sanidad en tu vida sea acreditada públicamente a la gloria de Dios.' }
                 ]
+            },
+            silencio_presencia: {
+                id: 'silencio_presencia',
+                orden_reino: 18,
+                categoria_tipo: 'general',
+                titulo: 'El Silencio en Su Presencia',
+                icono: '🤫',
+                descripcion: 'Aprender de Jesús el arte sagrado de callar el ruido propio para escuchar la voz del Espíritu Santo.',
+                pasajeAncla: 'Lucas 5:16',
+                video_id_biblioteca: 'PLACEHOLDER_BIBLIOTECA_SILENCIO_PRESENCIA',
+                referencia_chosen: '',
+                entregas: [
+                    { id: 'sil_1', titulo: 'Fase 1: Discernir', tipo: 'Discernir', contenido: 'Vivimos rodeados de ruido: notificaciones, opiniones, música de fondo, la voz constante de nuestros propios pensamientos ansiosos. Discernir el ruido que cargas es notar cuánto de él existe para evitar el silencio, no para llenar un vacío real. Jesús, en medio de multitudes que reclamaban cada minuto de su tiempo, eligió otro ritmo: "Levantándose muy de mañana, siendo aún muy oscuro, salió y se fue a un lugar desierto, y allí oraba" (Marcos 1:35). El silencio no era para Él un lujo ocasional, sino una necesidad tan real como el sueño o el alimento.', reto_asimilacion: '¿Cuánto tiempo hoy pasaste completamente en silencio, sin pantallas, música ni conversación? ¿Qué te incomoda escuchar cuando callas todo lo demás?' },
+                    { id: 'sil_2', titulo: 'Fase 2: Entender', tipo: 'Entender', contenido: 'El silencio bíblico no es una técnica de vaciar la mente, sino un espacio para reconocer una voz específica en medio de todas las demás. Jesús enseñó: "Mis ovejas oyen mi voz, y yo las conozco, y me siguen" (Juan 10:27). Entender el misterio del silencio es comprender que su propósito no es el silencio en sí mismo, sino afinar el oído del corazón para distinguir la voz del Espíritu de la voz del mundo, del enemigo y de tu propia ansiedad. No se calla para escapar de la vida, se calla para escuchar a Quien la sostiene.', reto_asimilacion: 'Esta semana, antes de orar por tus peticiones, dedica los primeros minutos solo a escuchar, sin pedir nada. ¿Qué se siente distinto?' },
+                    { id: 'sil_3', titulo: 'Fase 3: Asimilar', tipo: 'Asimilar', contenido: 'Asimilar el silencio requiere resistir el impulso de llenarlo con nuestras propias palabras, explicaciones o soluciones. En el monte de la Transfiguración, mientras Pedro todavía hablaba, una nube lo cubrió y una voz dijo: "Este es mi Hijo amado; a él oíd" (Marcos 9:7). El Padre interrumpió el ruido humano para señalar hacia Jesús. Asimilar esta verdad es aprender que muchas veces Dios no necesita que le sugiramos qué hacer; necesita que nos quedemos quietos el tiempo suficiente para oír lo que Él ya está diciendo.', reto_asimilacion: 'La próxima vez que ores por una decisión difícil, guarda silencio durante cinco minutos completos antes de hablar. Escribe después lo que percibiste, si acaso algo.' },
+                    { id: 'sil_4', titulo: 'Fase 4: Enseñar', tipo: 'Enseñar', contenido: 'Quien ha aprendido a callar delante de Dios también aprende a callar delante de las personas. Jesús, acusado falsamente ante Pilato y los principales sacerdotes, "no respondía nada... de tal manera que el gobernador se maravillaba mucho" (Mateo 27:12-14). No calló por debilidad, sino porque su confianza estaba puesta en el Padre, no en defenderse a sí mismo. Enseñar el misterio del silencio es mostrar a otros, con tu propia manera de responder, que no toda acusación necesita respuesta inmediata y que no todo espacio de tensión necesita ser llenado con tus palabras.', reto_asimilacion: 'Piensa en una situación reciente donde sentiste la urgencia de defenderte o explicarte. ¿Habría cambiado algo si hubieras esperado antes de hablar?' },
+                    { id: 'sil_5', titulo: 'Fase 5: Manifestar', tipo: 'Manifestar', contenido: 'El fruto visible de esta disciplina no es aislamiento ni pasividad, sino una vida arraigada y en paz. Jesús mismo lo describió como permanecer: "Yo soy la vid, vosotros los pámpanos; el que permanece en mí, y yo en él, éste lleva mucho fruto; porque separados de mí nada podéis hacer" (Juan 15:5). Manifestar el silencio aprendido en Su presencia es vivir con un espíritu menos reactivo, un discernimiento más agudo para reconocer Su voz, y una quietud interior que no depende de que todo a tu alrededor esté en calma.', reto_asimilacion: 'Observa tu semana: ¿tu paz depende de que las circunstancias estén tranquilas, o de que tú permanezcas conectado a Cristo en medio de ellas?' }
+                ]
+            },
+            frutos_espiritu: {
+                id: 'frutos_espiritu',
+                orden_reino: 19,
+                categoria_tipo: 'general',
+                titulo: 'Los Frutos del Espíritu Santo',
+                icono: '🍇',
+                descripcion: 'Dejar que el Espíritu forme en ti el carácter mismo de Jesucristo, el fruto que Él enseñó y vivió primero.',
+                pasajeAncla: 'Gálatas 5:22-23',
+                video_id_biblioteca: 'PLACEHOLDER_BIBLIOTECA_FRUTOS_ESPIRITU',
+                referencia_chosen: '',
+                entregas: [
+                    { id: 'frut_1', titulo: 'Fase 1: Discernir', tipo: 'Discernir', contenido: 'Existe una diferencia esencial entre un don (lo que Dios te da para servir) y un fruto (lo que el Espíritu forma en tu carácter con el tiempo). Discernir esto es dejar de perseguir el fruto del Espíritu como quien persigue una meta de esfuerzo propio. Jesús fue claro: "Yo soy la vid, vosotros los pámpanos... separados de mí nada podéis hacer" (Juan 15:5). El fruto no se fabrica ni se actúa; crece. Discernir tu propia vida es notar dónde estás esforzándote por parecer paciente o amoroso, en lugar de simplemente permanecer conectado a Cristo.', reto_asimilacion: '¿En qué área de tu carácter has estado esforzándote por "actuar mejor" en vez de permanecer más cerca de Jesús?' },
+                    { id: 'frut_2', titulo: 'Fase 2: Entender', tipo: 'Entender', contenido: '"El fruto del Espíritu es amor, gozo, paz, paciencia, benignidad, bondad, fe, mansedumbre, templanza" (Gálatas 5:22-23). Nótese que Pablo escribe "fruto" en singular, no "frutos": no son nueve virtudes independientes para coleccionar, sino un solo carácter integrado, el carácter de Jesucristo mismo, reproducido en ti. Entender esta verdad es dejar de tratarlo como una lista de tareas y comenzar a verlo como una persona formándose en ti: Cristo mismo, quien ya vivió cada una de estas cualidades a la perfección delante de nosotros.', reto_asimilacion: 'Lee Gálatas 5:22-23 despacio. ¿Cuál de estas cualidades reconoces con más claridad en la vida de Jesús que retratan los Evangelios?' },
+                    { id: 'frut_3', titulo: 'Fase 3: Asimilar', tipo: 'Asimilar', contenido: 'El fruto abundante no aparece sin un proceso, y ese proceso incluye la poda. Jesús enseñó: "Todo pámpano que en mí no lleva fruto, lo quitará; y todo aquel que lleva fruto, lo limpiará, para que lleve más fruto" (Juan 15:2). Asimilar el fruto del Espíritu significa recibir con confianza las temporadas de corrección, espera o dificultad como parte del mismo proceso que produce más paciencia, más amor y más paz — no como castigo, sino como el cuidado de un Padre que quiere una cosecha mayor en ti.', reto_asimilacion: '¿Hay alguna dificultad actual en tu vida que podrías empezar a ver como poda del Padre, en vez de solo como un obstáculo?' },
+                    { id: 'frut_4', titulo: 'Fase 4: Enseñar', tipo: 'Enseñar', contenido: 'Jesús enseñó que el fruto, no las palabras, es lo que revela el corazón: "Por sus frutos los conoceréis... así que, por sus frutos los conoceréis" (Mateo 7:16, 20). Enseñar el fruto del Espíritu a otros no ocurre primero con discursos, sino con una vida consistente que otros pueden observar de cerca: cómo respondes bajo presión, cómo tratas a quien no puede beneficiarte, cuánta paciencia tienes cuando nadie más que Dios te está mirando. Tu carácter, más que tus palabras, es el sermón que las personas más cercanas a ti escuchan cada día.', reto_asimilacion: 'Si alguien de tu casa o trabajo describiera tu carácter esta semana con una sola palabra, ¿cuál crees que usaría?' },
+                    { id: 'frut_5', titulo: 'Fase 5: Manifestar', tipo: 'Manifestar', contenido: 'La manifestación plena del fruto del Espíritu glorifica al Padre y confirma que eres Su discípulo: "En esto es glorificado mi Padre, en que llevéis mucho fruto, y seáis así mis discípulos" (Juan 15:8). No se trata de perfección instantánea, sino de una dirección constante: una vida donde el amor, el gozo, la paz y las demás cualidades se vuelven cada vez más tu respuesta natural, no tu excepción ocasional. El fruto maduro no se exige a sí mismo dar fruto; simplemente permanece en la Vid, y el fruto llega.', reto_asimilacion: 'Elige una sola cualidad del fruto del Espíritu para pedirle a Dios esta semana, no como meta de esfuerzo, sino como una oración de permanecer más cerca de Él.' }
+                ]
             }
         };
 
@@ -930,7 +995,7 @@
             {
                 icono: '🌿',
                 titulo: 'Un camino guiado, paso a paso',
-                texto: 'Un retiro de 14 días a tu ritmo, enseñanzas para tu proceso, y un espacio para crecer en comunión con el Espíritu Santo — todo cuando estés listo.'
+                texto: 'Un retiro de 14 días a tu ritmo, enseñanzas para tu proceso, y un espacio para crecer en comunión con el Espíritu Santo — todo cuando estés listo, nunca de golpe.'
             },
             {
                 icono: '🕊️',
@@ -1179,6 +1244,12 @@
                 moduloActivoGraciaId: null,
                 moduloMaxGracia: 1,
                 entregaActivaId: null,
+                // "¿Qué Haría Jesús?" — historial de preguntas y respuestas de esta
+                // estación (más reciente primero, tope de 30 entradas — ver
+                // consultarQueHariaJesus()). Se reinicia con reiniciarCamino(),
+                // mismo criterio que respuestasGracia/respuestasEncuentro (no está
+                // en la lista de excepciones preservadas de esa función).
+                historialPreguntasJesus: [],
                 // Hash SHA-256 (nunca el texto plano) de la contraseña sencilla que el
                 // propio usuario define al entrar por primera vez a su perfil — ver
                 // solicitarAccesoPerfil(). null mientras no se haya definido todavía.
@@ -1306,6 +1377,7 @@
                 if (!this.datos.respuestasGracia) this.datos.respuestasGracia = {};
                 if (this.datos.moduloActivoGraciaId === undefined) this.datos.moduloActivoGraciaId = null;
                 if (this.datos.moduloMaxGracia === undefined) this.datos.moduloMaxGracia = 1;
+                if (!this.datos.historialPreguntasJesus) this.datos.historialPreguntasJesus = [];
 
                 // Corrección de bug: faseAntesDeDiscipulado es una variable compartida
                 // (no pertenece a ningún perfil). Si no se limpia aquí, cambiar de
@@ -1317,6 +1389,7 @@
                 faseAntesDeBienvenidaGuiada = null;
                 faseAntesDeEspacios = null;
                 faseAntesDeGracia = null;
+                faseAntesDeQueHariaJesus = null;
                 slideBienvenidaGuiada = 0;
 
                 this.guardarTodo();
@@ -1490,6 +1563,7 @@
                         case 'espacios': progHeader.innerText = "Espacios"; break;
                         case 'gracia_biblioteca': progHeader.innerText = "De Gracia Recibisteis, Dad de Gracia"; break;
                         case 'gracia_modulo': progHeader.innerText = (MODULOS_GRACIA_RECIBISTEIS.find(m => m.id === this.datos.moduloActivoGraciaId) || {}).nombre || "De Gracia Recibisteis, Dad de Gracia"; break;
+                        case 'que_haria_jesus': progHeader.innerText = "¿Qué Haría Jesús?"; break;
                         default: progHeader.innerText = "";
                     }
                 }
@@ -1515,6 +1589,7 @@
                     case 'espacios': viewport.innerHTML = VistaEspacios(); break;
                     case 'gracia_biblioteca': viewport.innerHTML = VistaDeGraciaRecibisteis(); break;
                     case 'gracia_modulo': viewport.innerHTML = VistaModuloGracia(); break;
+                    case 'que_haria_jesus': viewport.innerHTML = VistaQueHariaJesus(); break;
                     default: viewport.innerHTML = VistaBienvenida();
                 }
             }
@@ -1760,6 +1835,107 @@
                 btn.classList.remove('bg-emerald-600');
                 btn.classList.add('bg-senda-oliva');
             }, 2000);
+        }
+
+        // --- "¿Qué Haría Jesús?" ---
+        function irAQueHariaJesus() {
+            if (!SendaEstado.perfilActivo) {
+                alert("Primero selecciona o crea tu perfil para usar esta sección.");
+                return;
+            }
+            const fasesDelModulo = ['que_haria_jesus'];
+            if (!fasesDelModulo.includes(SendaEstado.datos.faseActual)) {
+                faseAntesDeQueHariaJesus = SendaEstado.datos.faseActual;
+            }
+            SendaEstado.irAFase('que_haria_jesus');
+        }
+
+        function salirDeQueHariaJesus() {
+            if (faseAntesDeQueHariaJesus) {
+                const destino = faseAntesDeQueHariaJesus;
+                faseAntesDeQueHariaJesus = null;
+                SendaEstado.irAFase(destino);
+            } else if (SendaEstado.datos.tipoRuta) {
+                SendaEstado.irAFase('sendero_dashboard');
+            } else {
+                SendaEstado.irAFase('bienvenida');
+            }
+        }
+
+        // Llama a la Supabase Edge Function (NUNCA directo a Groq desde el
+        // cliente — la API key de Groq vive solo como secret del lado del
+        // servidor, ver supabase/functions/que-haria-jesus/index.ts). El
+        // contrato con la función es mínimo a propósito: se envía { pregunta },
+        // se recibe { respuesta } — el prompt de sistema estricto vive entero
+        // del lado del servidor, nunca en este archivo.
+        async function consultarQueHariaJesus() {
+            if (procesandoPreguntaJesus) return;
+            const txt = document.getElementById('texto-pregunta-jesus');
+            const btn = document.getElementById('btn-preguntar-jesus');
+            const estado = document.getElementById('estado-pregunta-jesus');
+            if (!txt || !btn) return;
+            const pregunta = textClean(txt.value);
+            if (pregunta === '') return;
+
+            if (SUPABASE_FUNCTION_URL.includes('TU_PROJECT_REF') || SUPABASE_ANON_KEY === 'PEGA_AQUI_TU_ANON_KEY_DE_SUPABASE') {
+                if (estado) {
+                    estado.innerText = 'Esta sección todavía no está configurada. Falta conectar la función de Supabase (ver supabase/functions/que-haria-jesus).';
+                    estado.classList.remove('hidden');
+                }
+                return;
+            }
+
+            procesandoPreguntaJesus = true;
+            btn.disabled = true;
+            btn.innerText = 'Buscando en Su testimonio...';
+            if (estado) {
+                estado.innerText = '';
+                estado.classList.add('hidden');
+            }
+
+            try {
+                const respuestaHttp = await fetch(SUPABASE_FUNCTION_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                    },
+                    body: JSON.stringify({ pregunta: pregunta })
+                });
+
+                const data = await respuestaHttp.json();
+
+                if (!respuestaHttp.ok || !data.respuesta) {
+                    throw new Error(data.error || ('HTTP ' + respuestaHttp.status));
+                }
+
+                const textoRespuesta = textClean(data.respuesta);
+
+                if (!SendaEstado.datos.historialPreguntasJesus) SendaEstado.datos.historialPreguntasJesus = [];
+                SendaEstado.datos.historialPreguntasJesus.unshift({
+                    pregunta: pregunta,
+                    respuesta: textoRespuesta,
+                    fecha: new Date().toISOString()
+                });
+                // Tope razonable de historial guardado en localStorage
+                if (SendaEstado.datos.historialPreguntasJesus.length > 30) {
+                    SendaEstado.datos.historialPreguntasJesus = SendaEstado.datos.historialPreguntasJesus.slice(0, 30);
+                }
+
+                txt.value = '';
+                procesandoPreguntaJesus = false;
+                SendaEstado.guardar();
+                SendaEstado.irAFase('que_haria_jesus');
+
+            } catch (error) {
+                procesandoPreguntaJesus = false;
+                btn.disabled = false;
+                btn.innerText = 'Preguntar';
+                if (estado) {
+                    estado.innerText = 'No se pudo obtener una respuesta en este momento. Revisa tu conexión e intenta de nuevo en unos segundos.';
+                    estado.classList.remove('hidden');
+                }
+            }
         }
 
         // Elimina un perfil por completo (y su progreso) de este dispositivo, previa
@@ -3478,9 +3654,10 @@
             }
 
             const espacios = [
-                { icono: '📚', nombre: 'Discipulados', desc: '17 series de enseñanza para tu proceso específico', onclick: 'irAVistaDiscipulados()', destacar: false },
+                { icono: '📚', nombre: 'Discipulados', desc: '19 series de enseñanza para tu proceso específico', onclick: 'irAVistaDiscipulados()', destacar: false },
                 { icono: '🕊️', nombre: 'Encuentro con el Espíritu Santo', desc: '6 niveles de comunión, siguiendo el patrón de Jesús', onclick: 'irAEncuentroEspiritu()', destacar: mostrarSugerenciaEncuentro },
-                { icono: '🎁', nombre: 'De Gracia Recibisteis, Dad de Gracia', desc: '7 módulos para aprender a dar a otros lo que recibiste', onclick: 'irADeGraciaRecibisteis()', destacar: false }
+                { icono: '🎁', nombre: 'De Gracia Recibisteis, Dad de Gracia', desc: '7 módulos para aprender a dar a otros lo que recibiste', onclick: 'irADeGraciaRecibisteis()', destacar: false },
+                { icono: '✝️', nombre: '¿Qué Haría Jesús?', desc: 'Pregunta y recibe una guía anclada estrictamente en Su testimonio y la Biblia', onclick: 'irAQueHariaJesus()', destacar: false }
             ];
 
             return `
@@ -3491,7 +3668,7 @@
                     <div class="text-center space-y-2">
                         <span class="text-xs uppercase tracking-[0.2em] text-senda-tierra font-semibold">✨ Espacios</span>
                         <h2 class="serif-title text-3xl md:text-4xl font-medium text-senda-texto">Para ir más profundo</h2>
-                        <p class="text-sm text-stone-600 font-light max-w-md mx-auto leading-relaxed"> La lectura de estos espacios no interfiere tu caminar diario.</p>
+                        <p class="text-sm text-stone-600 font-light max-w-md mx-auto leading-relaxed">Cuando quieras, a tu ritmo — nada acá es obligatorio para seguir tu caminar diario.</p>
                     </div>
 
                     <div class="space-y-4">
@@ -3599,6 +3776,66 @@
                     <div class="pt-2 flex flex-wrap justify-center gap-3">
                         <button onclick="irADeGraciaRecibisteis()" class="text-xs text-stone-600 hover:text-stone-600 underline">← Biblioteca</button>
                         ${siguiente ? `<button onclick="irAModuloGracia('${siguiente.id}')" class="text-xs text-senda-oliva hover:underline font-semibold">Siguiente: ${siguiente.nombre} →</button>` : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- "¿Qué Haría Jesús?": pregunta libre + respuesta anclada en Su
+        // testimonio (vía Supabase Edge Function, ver consultarQueHariaJesus).
+        // Una sola vista (no biblioteca→detalle como los demás espacios) porque
+        // no es contenido pre-escrito, es una herramienta de consulta.
+        function VistaQueHariaJesus() {
+            const historial = SendaEstado.datos.historialPreguntasJesus || [];
+            const ultima = historial[0];
+            const anteriores = historial.slice(1);
+
+            return `
+                <div class="space-y-6">
+                    <div class="flex justify-start">
+                        <button onclick="salirDeQueHariaJesus()" class="text-xs text-stone-600 hover:text-stone-600 underline">← Volver a mi caminar diario</button>
+                    </div>
+
+                    <div class="text-center space-y-2">
+                        <span class="text-xs uppercase tracking-[0.2em] text-senda-tierra font-semibold">✝️ ¿Qué Haría Jesús?</span>
+                        <h2 class="serif-title text-3xl md:text-4xl font-medium text-senda-texto">Una guía anclada en Su testimonio</h2>
+                        <p class="text-sm text-stone-600 font-light max-w-md mx-auto leading-relaxed">Cuéntale tu situación. La respuesta se basa estrictamente en lo que Jesús enseñó y vivió según la Biblia — no en opinión, no en suposiciones.</p>
+                    </div>
+
+                    <div class="bg-senda-fondo p-6 rounded-[2rem] border border-stone-200/60 shadow-sm space-y-4">
+                        <label class="block text-xs font-bold text-senda-oliva uppercase tracking-widest text-center md:text-left">¿Qué situación quieres traer delante de Jesús?</label>
+                        <textarea id="texto-pregunta-jesus" placeholder="Describe brevemente tu situación o tu pregunta..." class="w-full h-32 p-5 text-base rounded-2xl border border-stone-200/80 focus:outline-none focus:border-senda-oliva focus:ring-1 focus:ring-senda-oliva bg-white/90 text-stone-700 resize-none font-light leading-relaxed shadow-inner transition-all duration-300"></textarea>
+                        <button id="btn-preguntar-jesus" onclick="consultarQueHariaJesus()" class="w-full py-4 bg-senda-oliva hover:bg-opacity-95 text-white font-bold rounded-2xl shadow-md transition-all tracking-wide">
+                            Preguntar
+                        </button>
+                        <p id="estado-pregunta-jesus" class="hidden text-sm text-senda-rojoSuave text-center font-medium"></p>
+                    </div>
+
+                    ${ultima ? `
+                        <div class="bg-white p-6 md:p-8 rounded-[2rem] border-2 border-senda-oro/30 space-y-4">
+                            <span class="text-xs font-bold text-senda-tierra uppercase tracking-widest">Tu pregunta</span>
+                            <p class="text-sm text-stone-600 italic leading-relaxed">"${ultima.pregunta}"</p>
+                            <div class="w-8 h-0.5 bg-senda-oro/40"></div>
+                            <span class="text-xs font-bold text-senda-oliva uppercase tracking-widest">Según Su testimonio</span>
+                            <p class="text-base text-stone-700 leading-relaxed font-light whitespace-pre-line">${ultima.respuesta}</p>
+                            <p class="text-[11px] text-stone-600 leading-relaxed pt-2 border-t border-stone-100">Esta guía es generada por IA a partir de un prompt anclado en la Biblia — no reemplaza el estudio personal de las Escrituras ni el consejo pastoral. Contrástala siempre con la Palabra.</p>
+                        </div>
+                    ` : ''}
+
+                    ${anteriores.length > 0 ? `
+                        <div class="space-y-3">
+                            <span class="text-xs font-bold text-senda-tierra uppercase tracking-widest">Preguntas anteriores</span>
+                            ${anteriores.map(item => `
+                                <div class="bg-senda-fondo p-4 rounded-2xl border border-stone-200/60 space-y-2">
+                                    <p class="text-xs text-stone-600 italic leading-relaxed">"${item.pregunta}"</p>
+                                    <p class="text-sm text-stone-700 leading-relaxed font-light whitespace-pre-line">${item.respuesta}</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+
+                    <div class="pt-2 text-center">
+                        <button onclick="salirDeQueHariaJesus()" class="text-xs text-stone-600 hover:text-stone-600 underline">← Volver a mi caminar diario</button>
                     </div>
                 </div>
             `;
