@@ -246,8 +246,8 @@
         // cliente edita a mano, y test_harness.js necesita poder sustituirla
         // temporalmente para probar la lógica de consultarQueHariaJesus() sin
         // red real.
-        let SUPABASE_FUNCTION_URL = 'https://oevuyzlteojlmcwfioae.supabase.co/functions/v1/que-haria-jesus';
-        let SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ldnV5emx0ZW9qbG1jd2Zpb2FlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk1MjE0MTMsImV4cCI6MjEwNTA5NzQxM30.j68iNr2AeM5WkFZ17Ff1BB_rf75qmCc7f42ret5IFmg';
+        let SUPABASE_FUNCTION_URL = 'https://TU_PROJECT_REF.supabase.co/functions/v1/que-haria-jesus';
+        let SUPABASE_ANON_KEY = 'PEGA_AQUI_TU_ANON_KEY_DE_SUPABASE';
 
         // ===================================================================
         // DATOS TEOLÓGICOS Y DE CONTENIDO PASTORAL
@@ -985,7 +985,7 @@
             {
                 icono: '🌱',
                 titulo: 'Antes de empezar...',
-                texto: 'Esto no es un examen para aprobar. Es un espacio para volver a caminar cerca de Cristo — a tu ritmo, sin prisa.'
+                texto: 'Esto no es un examen para aprobar. Es un espacio para volver a caminar cerca de Cristo — a tu ritmo.'
             },
             {
                 icono: '💬',
@@ -995,7 +995,7 @@
             {
                 icono: '🌿',
                 titulo: 'Un camino guiado, paso a paso',
-                texto: 'Un retiro de 14 días a tu ritmo, enseñanzas para tu proceso, y un espacio para crecer en comunión con el Espíritu Santo — todo cuando estés listo, nunca de golpe.'
+                texto: 'Un retiro de 14 días a tu ritmo, enseñanzas para tu proceso, y un espacio para crecer en comunión con el Espíritu Santo.'
             },
             {
                 icono: '🕊️',
@@ -3668,7 +3668,7 @@
                     <div class="text-center space-y-2">
                         <span class="text-xs uppercase tracking-[0.2em] text-senda-tierra font-semibold">✨ Espacios</span>
                         <h2 class="serif-title text-3xl md:text-4xl font-medium text-senda-texto">Para ir más profundo</h2>
-                        <p class="text-sm text-stone-600 font-light max-w-md mx-auto leading-relaxed">Cuando quieras, a tu ritmo — nada acá es obligatorio para seguir tu caminar diario.</p>
+                        <p class="text-sm text-stone-600 font-light max-w-md mx-auto leading-relaxed">Estos espacios refuerzan tu caminar diario: un lugar para rendirte más y colaborar con el Espíritu Santo.</p>
                     </div>
 
                     <div class="space-y-4">
@@ -3781,6 +3781,47 @@
             `;
         }
 
+        // Elimina una pregunta del historial de "¿Qué Haría Jesús?". Solo local
+        // (historialPreguntasJesus vive en el perfil, en localStorage — no hay
+        // tabla de Supabase para esto; la Edge Function solo consulta a Groq y
+        // devuelve la respuesta, no guarda nada). Se identifica por 'fecha'
+        // (ISO string, única en la práctica) porque el objeto no tiene id propio.
+        function eliminarPreguntaJesus(fecha) {
+            if (!confirm('¿Eliminar esta pregunta y su respuesta de tu historial? No se puede deshacer.')) return;
+            if (!SendaEstado.datos.historialPreguntasJesus) return;
+            SendaEstado.datos.historialPreguntasJesus = SendaEstado.datos.historialPreguntasJesus.filter(item => item.fecha !== fecha);
+            SendaEstado.guardar();
+            SendaEstado.renderizarFaseActual();
+        }
+
+        // Acordeón para una pregunta guardada en "Preguntas anteriores". Reutiliza
+        // el mismo mecanismo de toggleAccordion()/accordionState que el dashboard
+        // (misma animación .accordion-content), pero con su propio marcado: hace
+        // falta un botón de eliminar junto al título, fuera del <button> que
+        // abre/cierra (no se puede anidar un <button> dentro de otro <button>).
+        function renderPreguntaJesusAcordeon(item) {
+            const id = 'pregunta-jesus-' + item.fecha.replace(/[^a-zA-Z0-9]/g, '-');
+            if (accordionState[id] === undefined) accordionState[id] = false;
+            const abierto = accordionState[id];
+            return `
+                <div class="rounded-2xl border border-stone-200/60 bg-senda-fondo overflow-hidden">
+                    <div class="flex items-center gap-1 pr-2">
+                        <button onclick="toggleAccordion('${id}')" class="opcion-btn flex-1 min-w-0 flex items-center justify-between gap-3 p-4 text-left hover:bg-stone-100/40">
+                            <span class="text-xs text-stone-700 italic leading-relaxed truncate">"${item.pregunta}"</span>
+                            <span id="chev-${id}" class="text-stone-600 text-sm flex-shrink-0 transition-transform duration-300" style="transform: rotate(${abierto ? '180' : '0'}deg);">▾</span>
+                        </button>
+                        <button onclick="eliminarPreguntaJesus('${item.fecha}')" class="text-stone-400 hover:text-senda-rojoSuave text-base flex-shrink-0 p-2" aria-label="Eliminar esta pregunta" title="Eliminar">🗑️</button>
+                    </div>
+                    <div id="${id}" class="accordion-content" style="max-height: ${abierto ? '3000px' : '0px'};">
+                        <div class="px-4 pb-4 pt-1 space-y-2 border-t border-stone-200/60">
+                            <p class="text-xs text-stone-600 italic leading-relaxed pt-2">"${item.pregunta}"</p>
+                            <p class="text-sm text-stone-700 leading-relaxed font-light whitespace-pre-line">${item.respuesta}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
         // --- "¿Qué Haría Jesús?": pregunta libre + respuesta anclada en Su
         // testimonio (vía Supabase Edge Function, ver consultarQueHariaJesus).
         // Una sola vista (no biblioteca→detalle como los demás espacios) porque
@@ -3813,7 +3854,10 @@
 
                     ${ultima ? `
                         <div class="bg-white p-6 md:p-8 rounded-[2rem] border-2 border-senda-oro/30 space-y-4">
-                            <span class="text-xs font-bold text-senda-tierra uppercase tracking-widest">Tu pregunta</span>
+                            <div class="flex items-center justify-between gap-3">
+                                <span class="text-xs font-bold text-senda-tierra uppercase tracking-widest">Tu pregunta</span>
+                                <button onclick="eliminarPreguntaJesus('${ultima.fecha}')" class="text-stone-400 hover:text-senda-rojoSuave text-base flex-shrink-0" aria-label="Eliminar esta pregunta" title="Eliminar">🗑️</button>
+                            </div>
                             <p class="text-sm text-stone-600 italic leading-relaxed">"${ultima.pregunta}"</p>
                             <div class="w-8 h-0.5 bg-senda-oro/40"></div>
                             <span class="text-xs font-bold text-senda-oliva uppercase tracking-widest">Según Su testimonio</span>
@@ -3825,12 +3869,7 @@
                     ${anteriores.length > 0 ? `
                         <div class="space-y-3">
                             <span class="text-xs font-bold text-senda-tierra uppercase tracking-widest">Preguntas anteriores</span>
-                            ${anteriores.map(item => `
-                                <div class="bg-senda-fondo p-4 rounded-2xl border border-stone-200/60 space-y-2">
-                                    <p class="text-xs text-stone-600 italic leading-relaxed">"${item.pregunta}"</p>
-                                    <p class="text-sm text-stone-700 leading-relaxed font-light whitespace-pre-line">${item.respuesta}</p>
-                                </div>
-                            `).join('')}
+                            ${anteriores.map(item => renderPreguntaJesusAcordeon(item)).join('')}
                         </div>
                     ` : ''}
 
