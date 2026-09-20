@@ -68,6 +68,22 @@
             overflow: hidden;
             transition: max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
+        /* Caja de respuesta de "¿Qué Haría Jesús?": el texto largo se
+           desplaza dentro de su propia caja en vez de estirar la página. */
+        .respuesta-scroll {
+            scrollbar-width: thin;
+            scrollbar-color: rgb(212 175 55 / 0.5) transparent;
+        }
+        .respuesta-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        .respuesta-scroll::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .respuesta-scroll::-webkit-scrollbar-thumb {
+            background-color: rgb(212 175 55 / 0.5);
+            border-radius: 999px;
+        }
         /* Feedback visual moderno para botones de opción/selección (toggles) */
         .opcion-btn {
             transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
@@ -247,7 +263,7 @@
         // temporalmente para probar la lógica de consultarQueHariaJesus() sin
         // red real.
         let SUPABASE_FUNCTION_URL = 'https://oevuyzlteojlmcwfioae.supabase.co/functions/v1/que-haria-jesus';
-        let SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ldnV5emx0ZW9qbG1jd2Zpb2FlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk1MjE0MTMsImV4cCI6MjEwNTA5NzQxM30.j68iNr2AeM5WkFZ17Ff1BB_rf75qmCc7f42ret5IFmg';
+let SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ldnV5emx0ZW9qbG1jd2Zpb2FlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk1MjE0MTMsImV4cCI6MjEwNTA5NzQxM30.j68iNr2AeM5WkFZ17Ff1BB_rf75qmCc7f42ret5IFmg';
 
         // ===================================================================
         // DATOS TEOLÓGICOS Y DE CONTENIDO PASTORAL
@@ -948,6 +964,78 @@
                     { id: 'frut_4', titulo: 'Fase 4: Enseñar', tipo: 'Enseñar', contenido: 'Jesús enseñó que el fruto, no las palabras, es lo que revela el corazón: "Por sus frutos los conoceréis... así que, por sus frutos los conoceréis" (Mateo 7:16, 20). Enseñar el fruto del Espíritu a otros no ocurre primero con discursos, sino con una vida consistente que otros pueden observar de cerca: cómo respondes bajo presión, cómo tratas a quien no puede beneficiarte, cuánta paciencia tienes cuando nadie más que Dios te está mirando. Tu carácter, más que tus palabras, es el sermón que las personas más cercanas a ti escuchan cada día.', reto_asimilacion: 'Si alguien de tu casa o trabajo describiera tu carácter esta semana con una sola palabra, ¿cuál crees que usaría?' },
                     { id: 'frut_5', titulo: 'Fase 5: Manifestar', tipo: 'Manifestar', contenido: 'La manifestación plena del fruto del Espíritu glorifica al Padre y confirma que eres Su discípulo: "En esto es glorificado mi Padre, en que llevéis mucho fruto, y seáis así mis discípulos" (Juan 15:8). No se trata de perfección instantánea, sino de una dirección constante: una vida donde el amor, el gozo, la paz y las demás cualidades se vuelven cada vez más tu respuesta natural, no tu excepción ocasional. El fruto maduro no se exige a sí mismo dar fruto; simplemente permanece en la Vid, y el fruto llega.', reto_asimilacion: 'Elige una sola cualidad del fruto del Espíritu para pedirle a Dios esta semana, no como meta de esfuerzo, sino como una oración de permanecer más cerca de Él.' }
                 ]
+            },
+            temor_reverente: {
+                id: 'temor_reverente',
+                orden_reino: 20,
+                categoria_tipo: 'general',
+                titulo: 'El Temor Reverente a Dios',
+                icono: '👑',
+                descripcion: 'Redescubre el temor que no aterra, sino que ordena el corazón bajo la majestad de Dios.',
+                pasajeAncla: 'Mateo 10:28',
+                video_id_biblioteca: 'PLACEHOLDER_BIBLIOTECA_TEMOR_REVERENTE',
+                referencia_chosen: '',
+                entregas: [
+                    { id: 'temor_1', titulo: 'Fase 1: Discernir', tipo: 'Discernir', contenido: 'Existe una diferencia enorme entre el temor que paraliza y el temor que ordena. Jesús mismo enseñó a Sus discípulos a discernir esa diferencia: "Y no temáis a los que matan el cuerpo, mas el alma no pueden matar; temed más bien a aquel que puede destruir el alma y el cuerpo en el infierno" (Mateo 10:28). No es un llamado al terror, sino a poner el temor en su lugar correcto: dejar de temer lo que solo puede tocar tu cuerpo o tu reputación, y aprender a reverenciar a Aquel que sostiene tu alma. Discernir tu propio corazón es notar a quién le temes de verdad cuando nadie te ve.', reto_asimilacion: '¿A qué le temes más en este momento: a lo que la gente piense de ti, o a apartarte de Dios?' },
+                    { id: 'temor_2', titulo: 'Fase 2: Entender', tipo: 'Entender', contenido: 'El temor reverente no nace de creer que Dios es cruel, sino de entender quién es Él realmente. Jesús lo explicó con una repetición deliberada: "Mas os digo, amigos míos: No temáis a los que matan el cuerpo... Pero os enseñaré a quién debéis temer: Temed a aquel que después de haber quitado la vida, tiene poder de echar en el infierno; sí, os digo, a éste temed" (Lucas 12:4-5). Nótese que los llamó "amigos míos" en el mismo aliento en que hablaba de temor: entender el temor reverente es entender que puede convivir con la cercanía más profunda. No es contradicción; es el temor de un hijo que honra a su Padre, no el de un esclavo que huye de un tirano.', reto_asimilacion: '¿Qué decisión has evitado tomar por miedo a la opinión de otros, que tomarías distinto si tu único temor fuera desagradar a Dios?' },
+                    { id: 'temor_3', titulo: 'Fase 3: Asimilar', tipo: 'Asimilar', contenido: 'Asimilar el temor reverente significa dejar que transforme cómo te acercas a Dios en lo cotidiano, no solo en lo teórico. En el desierto, tentado a usar Su posición para atajos fáciles, Jesús respondió citando la Escritura: "Escrito está también: No tentarás al Señor tu Dios" (Mateo 4:7). Incluso el Hijo se negó a poner a prueba al Padre para conveniencia propia. Asimilar esta reverencia es tratar la Palabra, la oración y la presencia de Dios sin la prisa ni la familiaridad casual con la que revisamos cualquier otra cosa, recordando que lo que se trata como común, termina por sentirse común.', reto_asimilacion: 'Examina cómo te acercas a la Palabra esta semana: ¿la abres con la misma prisa que revisas el teléfono, o con la reverencia de quien sabe que es santa?' },
+                    { id: 'temor_4', titulo: 'Fase 4: Enseñar', tipo: 'Enseñar', contenido: 'Cuando Jesús enseñó a orar a Sus discípulos, la primera palabra después de dirigirse al Padre no fue una petición, sino una reverencia: "Padre nuestro que estás en los cielos, santificado sea tu nombre" (Mateo 6:9). Antes de pedir pan, perdón o dirección, Jesús enseñó a honrar primero el nombre de Dios como santo. Enseñar el temor reverente a otros —hijos, discípulos, nuevos creyentes— empieza igual: no con advertencias, sino modelando cómo hablamos de Dios y a Dios, para que quienes nos observan aprendan, antes que ninguna doctrina, que Su nombre no es uno más entre tantos.', reto_asimilacion: 'Comparte con alguien más joven en la fe por qué te diriges a Dios como lo haces, y qué significa para ti que Su nombre sea "santo".' },
+                    { id: 'temor_5', titulo: 'Fase 5: Manifestar', tipo: 'Manifestar', contenido: 'El fruto visible del temor reverente no es ansiedad, sino integridad incluso en lo escondido. La noche más solitaria de Jesús no fue ante una multitud, sino a solas en Getsemaní, donde sometió Su propia voluntad: "Padre, si quieres, pasa de mí esta copa; pero no se haga mi voluntad, sino la tuya" (Lucas 22:42). Nadie lo aplaudió esa noche; nadie lo hubiera sabido si Él hubiera elegido distinto. Manifestar este discipulado es vivir con esa misma calidad de obediencia no observada, porque el temor reverente ya resolvió, de antemano, ante quién realmente rendimos cuentas.', reto_asimilacion: 'Piensa en un área donde actúas distinto estando solo que estando acompañado. ¿Qué revela eso sobre a quién temes de verdad?' }
+                ]
+            },
+            soberania_proposito: {
+                id: 'soberania_proposito',
+                orden_reino: 21,
+                categoria_tipo: 'general',
+                titulo: 'El Propósito Detrás de Cada Día',
+                icono: '🧩',
+                descripcion: 'Descansa en que nada de lo que Dios permite en tu día es un accidente: todo tiene un lugar en Su diseño soberano.',
+                pasajeAncla: 'Mateo 10:29-31',
+                video_id_biblioteca: 'PLACEHOLDER_BIBLIOTECA_SOBERANIA_PROPOSITO',
+                referencia_chosen: '',
+                entregas: [
+                    { id: 'sob_1', titulo: 'Fase 1: Discernir', tipo: 'Discernir', contenido: 'Discernir la soberanía de Dios empieza por notar la mentira silenciosa de que tu vida es una sucesión de eventos sin dirección. Jesús enseñó exactamente lo opuesto: "¿No se venden dos pajarillos por un cuarto? Con todo, ni uno de ellos cae a tierra sin vuestro Padre. Pues aun vuestros cabellos están todos contados. Así que, no temáis; más valéis vosotros que muchos pajarillos" (Mateo 10:29-31). Si ni un ave cae sin que el Padre lo permita, nada en tu día, ni lo pequeño ni lo que te parece sin sentido, escapa a Su atención y Su propósito.', reto_asimilacion: '¿Qué parte de tu semana sientes que "sucedió porque sí", sin ningún propósito de Dios detrás?' },
+                    { id: 'sob_2', titulo: 'Fase 2: Entender', tipo: 'Entender', contenido: 'Entender el propósito de Dios en tu vida significa dejar de medir tu camino con el de otros. Cuando Pedro, después de recibir su propio llamado, preguntó por el destino de Juan, Jesús le respondió sin rodeos: "¿Qué a ti? Sígueme tú" (Juan 21:22). No hay dos caminos idénticos porque no hay dos propósitos idénticos: cada persona recibe una porción, un tiempo y una tarea diseñados a su medida por el mismo Padre que cuenta los cabellos de tu cabeza. Comparar tu capítulo con el de otro es perder de vista que el autor de ambos es el mismo, y sabe exactamente lo que escribe.', reto_asimilacion: 'Nombra una diferencia entre tu camino y el de otra persona que hayas visto como injusta. ¿Podrías verla en cambio como diseño?' },
+                    { id: 'sob_3', titulo: 'Fase 3: Asimilar', tipo: 'Asimilar', contenido: 'Asimilar la soberanía de Dios incluye aceptar Su tiempo, no solo Su plan. Al enterarse de que Lázaro, a quien amaba, estaba enfermo, Jesús no corrió de inmediato: "Y amaba Jesús a Marta, a su hermana y a Lázaro. Cuando oyó, pues, que estaba enfermo, se quedó dos días más en el lugar donde estaba" (Juan 11:5-6). Ese aparente retraso no fue indiferencia; fue el espacio exacto donde Dios preparaba una resurrección, algo mayor que una simple sanidad. Lo que hoy interpretas como tardanza de Dios podría ser, en realidad, el tiempo que necesita para preparar algo que una respuesta inmediata jamás hubiera producido.', reto_asimilacion: '¿Hay algo en tu vida que interpretas como que Dios "llegó tarde"? Pídele que te muestre si en realidad está preparando algo mayor.' },
+                    { id: 'sob_4', titulo: 'Fase 4: Enseñar', tipo: 'Enseñar', contenido: 'Frente a un hombre ciego de nacimiento, los discípulos de Jesús buscaban un culpable: ¿el hombre o sus padres? Jesús reencuadró por completo la pregunta: "Ni éste pecó, ni sus padres, sino para que las obras de Dios se manifiesten en él" (Juan 9:1-3). Enseñar el propósito de Dios a otros es ayudarles a dar ese mismo giro: dejar de preguntar solamente "¿por qué a mí?" para empezar a preguntar "¿para qué, Señor?", no para minimizar el dolor, sino para abrir espacio a que Dios haga algo con él que el sufrimiento por sí solo nunca hubiera producido.', reto_asimilacion: 'Piensa en alguien que atraviesa una circunstancia que no entiende, y ayúdale esta semana a buscar el "para qué" en lugar de solo el "por qué".' },
+                    { id: 'sob_5', titulo: 'Fase 5: Manifestar', tipo: 'Manifestar', contenido: 'El fruto de confiar en el diseño soberano de Dios es una vida que puede habitar plenamente el día de hoy. Jesús cerró Su enseñanza sobre la provisión del Padre con una instrucción práctica: "Así que, no os afanéis por el día de mañana, porque el día de mañana traerá su afán. Basta a cada día su propio mal" (Mateo 6:34). Manifestar este discipulado no es dejar de planear, sino dejar de cargar el mañana con ansiedad, porque Quien diseñó el día de hoy ya está, con el mismo cuidado, en el día que todavía no llega.', reto_asimilacion: 'Al final de este día, en vez de repasar solo lo que salió mal, intenta nombrar en oración un propósito que Dios pudo tener escondido en algo pequeño de hoy.' }
+                ]
+            },
+            maravilla_creacion: {
+                id: 'maravilla_creacion',
+                orden_reino: 22,
+                categoria_tipo: 'general',
+                titulo: 'El Diseño que Invita a Disfrutar',
+                icono: '🌅',
+                descripcion: 'Aprende de Jesús a contemplar la creación, no solo a usarla, y a agradecer al Dios que la hizo hermosa además de útil.',
+                pasajeAncla: 'Lucas 12:22-31',
+                video_id_biblioteca: 'PLACEHOLDER_BIBLIOTECA_MARAVILLA_CREACION',
+                referencia_chosen: '',
+                entregas: [
+                    { id: 'mar_1', titulo: 'Fase 1: Discernir', tipo: 'Discernir', contenido: 'Jesús invitó a Sus oyentes a hacer algo que la mayoría de nosotros ha dejado de hacer: mirar de verdad. "Considerad los cuervos, que ni siembran ni siegan; no tienen bodega ni granero, y sin embargo, Dios los alimenta; ¡cuánto más valéis vosotros que las aves!" (Lucas 12:24). La palabra "considerad" es una orden a detenerse, no una sugerencia de fondo. Discernir tu relación con la creación es notar cuánta belleza que Dios puso deliberadamente a tu alrededor pasa inadvertida porque vives con la mirada baja, corriendo de una pantalla a otra.', reto_asimilacion: '¿Cuándo fue la última vez que te detuviste, sin prisa, solo a mirar el cielo, un árbol o un atardecer, sin fotografiarlo ni compartirlo?' },
+                    { id: 'mar_2', titulo: 'Fase 2: Entender', tipo: 'Entender', contenido: 'La creación no solo provee; también deleita, y eso también revela a su Diseñador. Jesús señaló: "Considerad los lirios, cómo crecen; no trabajan, ni hilan; pero os digo que ni Salomón con toda su gloria se vistió como uno de ellos" (Lucas 12:27). Un Dios meramente funcional hubiera hecho lirios grises y prácticos; el Dios que Jesús describe los vistió con una gloria que superó a Salomón. Entender esto es entender que Su diseño no es solo provisión: es también regalo, es también deleite puesto ahí a propósito para que lo disfrutes.', reto_asimilacion: 'Nombra tres cosas en la naturaleza que notes hoy que no tienen ninguna función "necesaria", solo son hermosas. Da gracias a Dios por cada una.' },
+                    { id: 'mar_3', titulo: 'Fase 3: Asimilar', tipo: 'Asimilar', contenido: 'Apartar tiempo al aire libre no es tiempo perdido; es imitar el mismo patrón de Jesús. Los Evangelios lo muestran retirándose deliberadamente a lugares abiertos para encontrarse con el Padre: "Y despedida la multitud, subió al monte a orar aparte" (Mateo 14:23). Jesús eligió montes, orillas y desiertos como el escenario de Su comunión más profunda con Dios. Asimilar esta verdad es dejar de ver la naturaleza como una distracción de la vida espiritual, y empezar a usarla, como Él, como el marco donde esa comunión sucede con más quietud.', reto_asimilacion: 'Esta semana, sal al aire libre, aunque sean diez minutos, sin el teléfono, y ora ahí, dando gracias por lo que ves.' },
+                    { id: 'mar_4', titulo: 'Fase 4: Enseñar', tipo: 'Enseñar', contenido: 'Jesús enseñaba señalando: "Mirad las aves del cielo, que no siembran, ni siegan, ni recogen en graneros, y sin embargo, vuestro Padre celestial las alimenta. ¿No sois vosotros de mucho más valor que ellas?" (Mateo 6:26). No dio una charla abstracta sobre la providencia; apuntó al cielo y dijo "mirad". Enseñar este asombro a otros, un hijo, un amigo, un hermano, empieza igual: señalar en voz alta un ave, una flor, un atardecer, y nombrar juntos a Quien lo hizo, para que el agradecimiento se vuelva un hábito compartido, no solo privado.', reto_asimilacion: 'En tu próxima salida con tu familia o un amigo, señala algo de la naturaleza en voz alta y agradece a Dios por eso frente a ellos.' },
+                    { id: 'mar_5', titulo: 'Fase 5: Manifestar', tipo: 'Manifestar', contenido: 'Toda esta enseñanza de Jesús sobre las aves y los lirios tenía un propósito final: liberar de la ansiedad. Él lo resume así: "Mas buscad el reino de Dios, y todas estas cosas os serán añadidas" (Lucas 12:31). Manifestar este discipulado es vivir con los ojos abiertos y agradecidos por lo pequeño y lo grande, sin la ansiedad de quien cree que todo depende únicamente de sus propias manos. El mismo Dios que viste los lirios y alimenta a los cuervos es quien sostiene tu día, con espacio de sobra para que también lo disfrutes.', reto_asimilacion: 'Cierra hoy nombrando en oración tres cosas del diseño de Dios, algo que viste, oíste o sentiste, por las que simplemente quieres decir gracias.' }
+                ]
+            },
+            descanso_verdadero: {
+                id: 'descanso_verdadero',
+                orden_reino: 23,
+                categoria_tipo: 'general',
+                titulo: 'El Descanso que Jesús Ofrece',
+                icono: '🌙',
+                descripcion: 'Aprende a descansar no como ausencia de trabajo, sino como una Persona a quien acudir cuando el alma está cargada.',
+                pasajeAncla: 'Mateo 11:28-30',
+                video_id_biblioteca: 'PLACEHOLDER_BIBLIOTECA_DESCANSO_VERDADERO',
+                referencia_chosen: '',
+                entregas: [
+                    { id: 'desc_1', titulo: 'Fase 1: Discernir', tipo: 'Discernir', contenido: 'El descanso verdadero comienza por admitir, sin vergüenza, que estás cargado. Jesús no puso ninguna condición previa a Su invitación: "Venid a mí todos los que estáis trabajados y cargados, y yo os haré descansar" (Mateo 11:28). No dijo "venid los que ya lo tienen resuelto"; dijo "los trabajados y cargados". Discernir tu necesidad real de descanso empieza por dejar de fingir que estás bien cuando no lo estás: el cansancio reconocido ante Jesús no es una falla espiritual, es la puerta de entrada a Su descanso.', reto_asimilacion: 'Sin minimizarlo ni exagerarlo, nombra hoy honestamente de qué estás cargado.' },
+                    { id: 'desc_2', titulo: 'Fase 2: Entender', tipo: 'Entender', contenido: 'Jesús no promete una vida sin yugo; promete un yugo distinto. "Llevad mi yugo sobre vosotros, y aprended de mí, que soy manso y humilde de corazón; y hallaréis descanso para vuestras almas. Porque mi yugo es fácil, y ligera mi carga" (Mateo 11:29-30). Un yugo se lleva entre dos: entender el descanso bíblico es entender que Jesús no te quita el trabajo, se coloca a tu lado a cargarlo contigo, llevando Él la parte mayor. El descanso no es la ausencia de yugo; es dejar de cargar en soledad.', reto_asimilacion: '¿Qué estás cargando actualmente como si tuvieras que hacerlo solo, cuando Jesús te está invitando a compartir el yugo?' },
+                    { id: 'desc_3', titulo: 'Fase 3: Asimilar', tipo: 'Asimilar', contenido: 'Incluso en medio de la necesidad legítima de las multitudes, Jesús se apartaba deliberadamente a descansar. Les dijo a Sus discípulos: "Venid vosotros solos a un lugar desierto, y descansad un poco. Porque eran muchos los que iban y venían, y ni aun tenían tiempo para comer" (Marcos 6:31). El descanso no esperó a que se acabaran las demandas, nunca se acaban, fue una decisión tomada en medio de ellas. Asimilar esto es aceptar que detenerte hoy no es abandonar tu responsabilidad; es seguir el mismo patrón de Aquel que cargaba más que tú.', reto_asimilacion: 'Aparta hoy un bloque de tiempo, aunque sea corto, para descansar de verdad, sin culpa, aunque queden cosas pendientes.' },
+                    { id: 'desc_4', titulo: 'Fase 4: Enseñar', tipo: 'Enseñar', contenido: 'Camino a Samaria, agotado por el viaje, Jesús no disimuló Su cansancio: "Y Jesús, cansado del camino, se sentó así junto al pozo" (Juan 4:6). Fue precisamente ahí, sentado y cansado, donde sostuvo una de las conversaciones más profundas de los Evangelios. Enseñar el descanso a otros, tu familia, tu equipo, es no esconder el cansancio como si fuera debilidad vergonzosa, sino nombrarlo con naturalidad y dar el ejemplo de parar, confiando en que Dios puede usar hasta ese momento de pausa.', reto_asimilacion: 'La próxima vez que estés cansado frente a tu familia o equipo, en vez de disimularlo, nómbralo con honestidad y da el ejemplo de parar.' },
+                    { id: 'desc_5', titulo: 'Fase 5: Manifestar', tipo: 'Manifestar', contenido: 'La manifestación final de este discipulado es una vida que puede detenerse sin culpa. Jesús mismo explicó el propósito original del descanso: "El día de reposo fue hecho por causa del hombre, y no el hombre por causa del día de reposo" (Marcos 2:27). El reposo no es una recompensa que te ganas al terminar todo; es un regalo de diseño, entregado desde el principio, pensado para tu bien. Manifestar el descanso verdadero es confiar en que el mundo, y tu propia obra, no dependen de que nunca sueltes el control.', reto_asimilacion: 'Al cerrar este día, entrega en oración lo que quedó sin terminar, y descansa esta noche como un acto de fe, no de resignación.' }
+                ]
             }
         };
 
@@ -959,16 +1047,30 @@
         // el cliente; el resto se extendió siguiendo el mismo criterio temático para
         // que la función esté completa en las 10 raíces — vale la pena revisarla.
         const TEMAS_RELACIONADOS = {
-            orgullo_autosuficiencia: ['arrogancia_rigidez', 'idolatria_control', 'santidad', 'nuevo_nacimiento_salvacion'],
-            f_cansancio: ['humildad_rendimiento', 'oracion_intimidad', 'fe_sanidad_poder'],
-            hechiceria_atajos: ['mansedumbre_control', 'obediencia', 'oracion_intimidad'],
+            orgullo_autosuficiencia: ['arrogancia_rigidez', 'idolatria_control', 'santidad', 'nuevo_nacimiento_salvacion', 'temor_reverente'],
+            f_cansancio: ['humildad_rendimiento', 'oracion_intimidad', 'fe_sanidad_poder', 'descanso_verdadero', 'maravilla_creacion'],
+            hechiceria_atajos: ['mansedumbre_control', 'obediencia', 'oracion_intimidad', 'soberania_proposito'],
             iras_irritacion: ['enemistades_muros', 'santidad', 'llamado_arrepentimiento'],
-            celos_comparacion: ['humildad_rendimiento', 'orgullo_autosuficiencia'],
-            idolatria_control: ['hechiceria_atajos', 'mansedumbre_control', 'obediencia', 'fe_sanidad_poder'],
+            celos_comparacion: ['humildad_rendimiento', 'orgullo_autosuficiencia', 'soberania_proposito'],
+            idolatria_control: ['hechiceria_atajos', 'mansedumbre_control', 'obediencia', 'fe_sanidad_poder', 'descanso_verdadero', 'temor_reverente'],
             enemistades_muros: ['iras_irritacion', 'gracia_perdon_amor'],
-            arrogancia_rigidez: ['orgullo_autosuficiencia', 'santidad'],
-            mansedumbre_control: ['hechiceria_atajos', 'idolatria_control', 'obediencia'],
-            humildad_rendimiento: ['f_cansancio', 'celos_comparacion', 'nuevo_nacimiento_salvacion']
+            arrogancia_rigidez: ['orgullo_autosuficiencia', 'santidad', 'temor_reverente'],
+            mansedumbre_control: ['hechiceria_atajos', 'idolatria_control', 'obediencia', 'soberania_proposito'],
+            humildad_rendimiento: ['f_cansancio', 'celos_comparacion', 'nuevo_nacimiento_salvacion', 'descanso_verdadero']
+        };
+
+        // Sugerencia contextual dentro de "Alimento Diario": cuando el pasaje
+        // del día coincide EXACTAMENTE con el pasajeAncla de un tema de
+        // Discipulados, se invita a profundizar ahí. Clave: `${tipoRuta}_${dia}`.
+        // Solo se registran coincidencias reales, nunca forzadas — de los 4
+        // temas nuevos (2026), temor_reverente y soberania_proposito no tienen
+        // ningún día con el mismo pasaje entre los 42 existentes, así que no
+        // aparecen aquí; siguen disponibles por la biblioteca y por
+        // TEMAS_RELACIONADOS.
+        const SUGERENCIAS_DISCIPULADO_POR_DIA = {
+            'severo_1': 'descanso_verdadero',   // Mateo 11:28-30 — mismo pasajeAncla exacto
+            'alerta_8': 'maravilla_creacion',   // Lucas 12:22-31 — mismo pasajeAncla exacto
+            'alerta_10': 'descanso_verdadero'   // Marcos 6:30-32 — refuerzo del mismo tema
         };
 
         // "Un Encuentro con el Espíritu Santo" — módulo independiente (icono
@@ -2900,6 +3002,8 @@
             const ruta = SendaEstado.datos.tipoRuta || 'stable';
             const protocolo = PROTOCOLOS_LECTURA[ruta] || PROTOCOLOS_LECTURA['stable'];
             const lecturaHoy = protocolo[diaAct - 1] || protocolo[0];
+            const temaSugeridoHoyId = SUGERENCIAS_DISCIPULADO_POR_DIA[`${ruta}_${diaAct}`];
+            const temaSugeridoHoy = temaSugeridoHoyId ? TEMAS_DISCIPULADO[temaSugeridoHoyId] : null;
             const revelacionHoy = REVELACION_YO_SOY[diaAct] || REVELACION_YO_SOY[1];
             const gratitudEscrita = (SendaEstado.datos.registroGratitud && SendaEstado.datos.registroGratitud[diaAct]) || "";
             const testimonioEscrito = SendaEstado.datos.testimonioEstacion || "";
@@ -3122,6 +3226,19 @@
                     <textarea id="texto-decision-lectura" placeholder="Escribe tu decisión de hoy..." class="w-full p-4 text-base rounded-2xl border border-stone-200 focus:outline-none focus:border-senda-oliva bg-stone-50/50 resize-none h-20 font-light leading-relaxed">${decisionLecturaEscrita}</textarea>
                     <button id="btn-guardar-decision-lectura" onclick="guardarDecisionLectura(${diaAct})" class="w-full py-3 bg-senda-oliva hover:bg-opacity-95 text-white text-sm font-bold rounded-2xl shadow-sm transition-all tracking-wide">
                         ${decisionLecturaEscrita ? "Actualizar mi Decisión" : "Guardar mi Decisión"}
+                    </button>
+                </div>
+                ` : ''}
+
+                ${temaSugeridoHoy ? `
+                <div class="pt-3 border-t border-stone-100">
+                    <button onclick="irADiscipuladoSugerido('${temaSugeridoHoy.id}')" class="w-full text-left flex items-center gap-3 p-4 bg-stone-50 hover:bg-stone-100 rounded-2xl border border-stone-100 transition-all">
+                        <span class="text-2xl flex-shrink-0">${temaSugeridoHoy.icono}</span>
+                        <span class="flex-1">
+                            <span class="block text-[11px] font-bold text-senda-tierra uppercase tracking-widest">También podría interesarte</span>
+                            <span class="block text-sm font-semibold text-senda-texto">${temaSugeridoHoy.titulo}</span>
+                        </span>
+                        <span class="text-stone-400">→</span>
                     </button>
                 </div>
                 ` : ''}
@@ -3784,12 +3901,14 @@
         // Elimina una pregunta del historial de "¿Qué Haría Jesús?". Solo local
         // (historialPreguntasJesus vive en el perfil, en localStorage — no hay
         // tabla de Supabase para esto; la Edge Function solo consulta a Groq y
-        // devuelve la respuesta, no guarda nada). Se identifica por 'fecha'
-        // (ISO string, única en la práctica) porque el objeto no tiene id propio.
-        function eliminarPreguntaJesus(fecha) {
+        // devuelve la respuesta, no guarda nada). Se identifica por posición en
+        // el arreglo (no por 'fecha': dos preguntas creadas muy seguido podrían
+        // compartir el mismo timestamp ISO, y el índice no tiene ese riesgo
+        // porque la app siempre vuelve a renderizar todo tras cada mutación).
+        function eliminarPreguntaJesus(indice) {
             if (!confirm('¿Eliminar esta pregunta y su respuesta de tu historial? No se puede deshacer.')) return;
-            if (!SendaEstado.datos.historialPreguntasJesus) return;
-            SendaEstado.datos.historialPreguntasJesus = SendaEstado.datos.historialPreguntasJesus.filter(item => item.fecha !== fecha);
+            if (!Array.isArray(SendaEstado.datos.historialPreguntasJesus)) return;
+            SendaEstado.datos.historialPreguntasJesus.splice(indice, 1);
             SendaEstado.guardar();
             SendaEstado.renderizarFaseActual();
         }
@@ -3799,8 +3918,8 @@
         // (misma animación .accordion-content), pero con su propio marcado: hace
         // falta un botón de eliminar junto al título, fuera del <button> que
         // abre/cierra (no se puede anidar un <button> dentro de otro <button>).
-        function renderPreguntaJesusAcordeon(item) {
-            const id = 'pregunta-jesus-' + item.fecha.replace(/[^a-zA-Z0-9]/g, '-');
+        function renderPreguntaJesusAcordeon(item, indice) {
+            const id = 'pregunta-jesus-' + indice;
             if (accordionState[id] === undefined) accordionState[id] = false;
             const abierto = accordionState[id];
             return `
@@ -3810,12 +3929,14 @@
                             <span class="text-xs text-stone-700 italic leading-relaxed truncate">"${item.pregunta}"</span>
                             <span id="chev-${id}" class="text-stone-600 text-sm flex-shrink-0 transition-transform duration-300" style="transform: rotate(${abierto ? '180' : '0'}deg);">▾</span>
                         </button>
-                        <button onclick="eliminarPreguntaJesus('${item.fecha}')" class="text-stone-400 hover:text-senda-rojoSuave text-base flex-shrink-0 p-2" aria-label="Eliminar esta pregunta" title="Eliminar">🗑️</button>
+                        <button onclick="eliminarPreguntaJesus(${indice})" class="text-stone-400 hover:text-senda-rojoSuave text-base flex-shrink-0 p-2" aria-label="Eliminar esta pregunta" title="Eliminar">🗑️</button>
                     </div>
                     <div id="${id}" class="accordion-content" style="max-height: ${abierto ? '3000px' : '0px'};">
                         <div class="px-4 pb-4 pt-1 space-y-2 border-t border-stone-200/60">
                             <p class="text-xs text-stone-600 italic leading-relaxed pt-2">"${item.pregunta}"</p>
-                            <p class="text-sm text-stone-700 leading-relaxed font-light whitespace-pre-line">${item.respuesta}</p>
+                            <div class="max-h-[40vh] overflow-y-auto pr-3 -mr-3 respuesta-scroll">
+                                <p class="text-sm text-stone-700 leading-relaxed font-light whitespace-pre-line">${item.respuesta}</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -3856,12 +3977,14 @@
                         <div class="bg-white p-6 md:p-8 rounded-[2rem] border-2 border-senda-oro/30 space-y-4">
                             <div class="flex items-center justify-between gap-3">
                                 <span class="text-xs font-bold text-senda-tierra uppercase tracking-widest">Tu pregunta</span>
-                                <button onclick="eliminarPreguntaJesus('${ultima.fecha}')" class="text-stone-400 hover:text-senda-rojoSuave text-base flex-shrink-0" aria-label="Eliminar esta pregunta" title="Eliminar">🗑️</button>
+                                <button onclick="eliminarPreguntaJesus(0)" class="text-stone-400 hover:text-senda-rojoSuave text-base flex-shrink-0" aria-label="Eliminar esta pregunta" title="Eliminar">🗑️</button>
                             </div>
                             <p class="text-sm text-stone-600 italic leading-relaxed">"${ultima.pregunta}"</p>
                             <div class="w-8 h-0.5 bg-senda-oro/40"></div>
                             <span class="text-xs font-bold text-senda-oliva uppercase tracking-widest">Según Su testimonio</span>
-                            <p class="text-base text-stone-700 leading-relaxed font-light whitespace-pre-line">${ultima.respuesta}</p>
+                            <div class="max-h-[45vh] overflow-y-auto pr-3 -mr-3 respuesta-scroll">
+                                <p class="text-base text-stone-700 leading-relaxed font-light whitespace-pre-line">${ultima.respuesta}</p>
+                            </div>
                             <p class="text-[11px] text-stone-600 leading-relaxed pt-2 border-t border-stone-100">Esta guía es generada por IA a partir de un prompt anclado en la Biblia — no reemplaza el estudio personal de las Escrituras ni el consejo pastoral. Contrástala siempre con la Palabra.</p>
                         </div>
                     ` : ''}
@@ -3869,7 +3992,7 @@
                     ${anteriores.length > 0 ? `
                         <div class="space-y-3">
                             <span class="text-xs font-bold text-senda-tierra uppercase tracking-widest">Preguntas anteriores</span>
-                            ${anteriores.map(item => renderPreguntaJesusAcordeon(item)).join('')}
+                            ${anteriores.map((item, i) => renderPreguntaJesusAcordeon(item, i + 1)).join('')}
                         </div>
                     ` : ''}
 
