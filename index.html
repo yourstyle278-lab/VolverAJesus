@@ -241,6 +241,10 @@
         let faseAntesDeEspacios = null;
         let faseAntesDeGracia = null;
         let faseAntesDeQueHariaJesus = null;
+        // Mismo patrón que faseAntesDeGracia — módulo independiente
+        // "Discernimiento" (ver sección 4.11). Debe resetearse en
+        // cargarPerfil(), mismo bug potencial documentado arriba.
+        let faseAntesDeDiscernimiento = null;
 
         // ===================================================================
         // CONFIGURACIÓN — "¿Qué Haría Jesús?" (backend en Supabase Edge Function)
@@ -262,8 +266,8 @@
         // cliente edita a mano, y test_harness.js necesita poder sustituirla
         // temporalmente para probar la lógica de consultarQueHariaJesus() sin
         // red real.
-        let SUPABASE_FUNCTION_URL = 'https://oevuyzlteojlmcwfioae.supabase.co/functions/v1/que-haria-jesus';
-let SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ldnV5emx0ZW9qbG1jd2Zpb2FlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk1MjE0MTMsImV4cCI6MjEwNTA5NzQxM30.j68iNr2AeM5WkFZ17Ff1BB_rf75qmCc7f42ret5IFmg';
+        let SUPABASE_FUNCTION_URL = 'https://TU_PROJECT_REF.supabase.co/functions/v1/que-haria-jesus';
+        let SUPABASE_ANON_KEY = 'PEGA_AQUI_TU_ANON_KEY_DE_SUPABASE';
 
         // ===================================================================
         // DATOS TEOLÓGICOS Y DE CONTENIDO PASTORAL
@@ -1194,6 +1198,56 @@ let SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYm
             }
         ];
 
+        // "Discernimiento" — módulo independiente (icono propio en Espacios,
+        // mismo patrón que Encuentro/De Gracia Recibisteis, NO vive dentro de
+        // TEMAS_DISCIPULADO). Biblioteca abierta que crece con el tiempo: a
+        // diferencia de Discipulados, aquí cada tema es una sola lectura
+        // continua (sin 5 fases) porque su contenido es expositivo, no un
+        // itinerario de formación personal. Cada `seccion` se muestra en un
+        // acordeón (renderAccordionSection, ya existente) para que un texto
+        // largo no se sienta como un muro de texto en el celular.
+        const TEMAS_DISCERNIMIENTO = {
+            empaque_humano: {
+                id: 'empaque_humano',
+                orden: 1,
+                icono: '🎭',
+                titulo: 'El Empaque Humano frente a la Suficiencia de Cristo',
+                descripcion: 'El Evangelio no necesita empaque moderno para ser poderoso — por qué la fe genuina nunca depende del método.',
+                video_id_biblioteca: 'PLACEHOLDER_BIBLIOTECA_EMPAQUE_HUMANO',
+                secciones: [
+                    { icono: '📡', subtitulo: 'El Ruido de la Novedad', contenido: 'Vivimos en una era saturada de innovación: algoritmos, Inteligencia Artificial, automatización, estrategias de marketing digital que compiten por nuestra atención a cada segundo. En medio de esa vorágine, la iglesia enfrenta una tentación sutil: creer que el Evangelio necesita "empaques modernos" para ser eficaz. No se trata de juzgar las herramientas en sí mismas, sino de detenernos en el camino y preguntar por las sendas antiguas (Jeremías 6:16): ¿dónde está puesta realmente nuestra fe?' },
+                    { icono: '🔬', subtitulo: 'El Diagnóstico de la Raíz', contenido: 'Pablo advirtió: "Todo lo que no proviene de fe, es pecado" (Romanos 14:23). Cuando un proyecto nace del deseo de figurar, monetizar o entretener, confiando en que el formato es lo que va a atraer a las almas, no proviene de la fe, sin importar cuántas vistas genere. Jesús ya lo advirtió en la Parábola del Sembrador (Mateo 13): la semilla en pedregales recibe la Palabra con alegría instantánea, deslumbrada por el estímulo del momento; pero sin raíz en el arrepentimiento genuino, en cuanto llega la prueba, se aparta. Conoció la música, la tecnología, el ambiente, pero nunca conoció verdaderamente a Dios.' },
+                    { icono: '🗿', subtitulo: 'El Ídolo del Método', contenido: 'La Escritura es tajante: "Maldito el varón que confía en el hombre, y pone carne por su brazo, y su corazón se aparta de Jehová" (Jeremías 17:5). Cuando depositamos nuestra confianza en el algoritmo o la estrategia, nos volvemos como la retama del desierto: secos e infructuosos. El Salmo 115 lo dice de los ídolos: tienen boca pero no hablan, tienen ojos pero no ven; "semejantes a ellos son los que los hacen, y cualquiera que confía en ellos". El objeto de nuestra fe no es una estrategia; es una Persona: Jesucristo, el autor y consumador de la fe (Hebreos 12:2).' },
+                    { icono: '✝️', subtitulo: 'La Suficiencia de Cristo', contenido: 'El Espíritu Santo no necesita de nuestros algoritmos ni de la Inteligencia Artificial para convencer al mundo. El Salmo 127:1 advierte: "Si Jehová no edifica la casa, en vano trabajan los que la edifican". Y Jesús fue más allá: "Separados de mí nada podéis hacer" (Juan 15:5); no dijo que sin Él seríamos más lentos, dijo NADA. El principio de la sabiduría es el temor a Jehová (Proverbios 1:7): quien de verdad teme a Dios no degrada Su Palabra para hacerla "comercial". Y nuestro servicio no nace de una estrategia fría, sino del amor, "porque él nos amó primero" (1 Juan 4:19). Una voz sintética no tiene alma; jamás podrá amar a Dios ni adorarle, la verdadera adoración es un atributo exclusivo del corazón humano redimido.' },
+                    { icono: '🌱', subtitulo: 'La Certeza de Su Obra', contenido: 'El éxito del Evangelio nunca descansó sobre estrategas ni tecnología. "No es del que planta ni del que riega, sino Dios, que da el crecimiento" (1 Corintios 3:7); esta verdad le quita la corona al hombre y se la devuelve a Dios. Podemos usar medios para sembrar; el milagro de la vida espiritual le pertenece solo al Creador. Descansamos en Su promesa: "el que comenzó en vosotros la buena obra, la perfeccionará hasta el día de Jesucristo" (Filipenses 1:6). Prosigamos a la meta (Filipenses 3:14), despejando el camino de todo ruido humano, confiados en el poder intrínseco de la Palabra viva y eficaz, firmes en la senda antigua.' }
+                ],
+                retoFinal: [
+                    '¿Hay algún proyecto, ministerio o área de tu vida donde has estado confiando más en el método, la estrategia o la tecnología que en Dios mismo? Nómbralo delante de Él con honestidad.',
+                    'Si de verdad creyeras que "separados de Él nada podéis hacer", ¿qué cambiarías esta semana en la forma en que sirves o trabajas?'
+                ]
+            },
+            senales_falsas: {
+                id: 'senales_falsas',
+                orden: 2,
+                icono: '🔍',
+                titulo: 'Discernir el Espíritu Detrás de la Señal',
+                descripcion: 'No todo lo impactante viene de Dios — cómo probar los espíritus sin perder la libertad de usar bien las herramientas de tu tiempo.',
+                video_id_biblioteca: 'PLACEHOLDER_BIBLIOTECA_SENALES_FALSAS',
+                secciones: [
+                    { icono: '✨', subtitulo: '¿Todo lo Impactante Viene de Dios?', contenido: 'La tecnología, el arte y los medios digitales hoy pueden crear espectáculos tan asombrosos que nublan el juicio del creyente. La pregunta que debemos hacernos es: ¿todo lo que se ve sobrenatural, exitoso o impactante proviene de Dios? La Escritura advierte que el reino de las tinieblas no puede crear talentos desde la nada, pero sí tiene una enorme capacidad para manipular, imitar y falsificar el poder divino con el fin de desviar la adoración.' },
+                    { icono: '🐍', subtitulo: 'Los Magos de Faraón: El Límite de la Imitación', contenido: 'En Éxodo 7 y 8, cuando la vara de Aarón se convirtió en serpiente por el poder de Dios, los magos de Faraón replicaron la señal con sus "artes secretas": el hecho de que algo "funcione" no significa que Dios esté detrás. Pero en la tercera plaga, los magos fracasaron y tuvieron que confesar: "Dedo de Dios es este" (Éxodo 8:19); el enemigo no tiene poder creativo, su imitación tiene un límite estricto. Y al inicio del encuentro, la vara de Aarón ya se había tragado las varas de los magos (Éxodo 7:12): bajo el señorío de Cristo, toda imitación termina consumida por la verdad.' },
+                    { icono: '💰', subtitulo: 'Simón el Mago: Cuando el Pueblo Confunde el Empaque con la Esencia', contenido: 'En Samaria, un hombre llamado Simón ejercía la magia y tenía a todo el pueblo engañado: decían de él "Este es el gran poder de Dios" (Hechos 8:9-11). El pueblo confundía el empaque con la esencia; como lo que hacía era impactante, asumían que venía de Dios. Hoy pasa lo mismo: si un canal automatizado con IA o una producción musical tiene millones de vistas, se tiende a llamarlo "bendición" sin examinar el espíritu que lo mueve. Cuando llegó Felipe con el poder genuino del Espíritu, el truco de Simón quedó al descubierto, y él, acostumbrado a comercializar lo espiritual, intentó comprar el don de Dios con dinero (Hechos 8:20). El enemigo nunca falsifica una señal para limpiar el corazón; lo endurece.' },
+                    { icono: '👻', subtitulo: 'La Pitonisa de Endor: Espíritus que Imitan', contenido: 'En 1 Samuel 28, el rey Saúl, desesperado, recurrió a una médium para invocar al profeta Samuel. La mujer invocó una entidad que Saúl identificó como Samuel, y esta pronunció palabras que "sonaban correctas". Pero Dios prohíbe la necromancia porque los muertos no regresan (Lucas 16:27-31): lo que se manifestó no fue el alma de Samuel, sino un espíritu de imitación que conocía el pasado de Saúl y usó su voz y apariencia para empujarlo a la ruina. Esto nos alerta hoy sobre aceptar mensajes solo porque "suenan bíblicos": una Inteligencia Artificial puede generar sermones estructuralmente perfectos, pero si carece del Espíritu de Verdad, es una carcasa vacía que imita la piedad.' },
+                    { icono: '🔥', subtitulo: 'El Falso Profeta: La Cumbre del Engaño', contenido: 'Apocalipsis 13:13-14 advierte que el enemigo hará "descender fuego del cielo... y engaña a los moradores de la tierra con las señales que se le ha permitido hacer". Ese fuego imita el milagro de Elías en el Monte Carmelo, pero el enemigo lo usará no para guiar al arrepentimiento, sino para un espectáculo que doblegue a las masas hacia la adoración de la Bestia. Si medimos la espiritualidad de un movimiento por el "impacto visual" que genera en una pantalla o un altar, seremos engañados. El enemigo es experto en efectos especiales espirituales.' },
+                    { icono: '🛡️', subtitulo: 'El Blindaje del Creyente', contenido: 'La Biblia entrega tres candados de seguridad espiritual. Primero, no consultar a los "magos" modernos (Gálatas 1:8): si un contenido ofrece un evangelio diluido o basado en el empaque tecnológico, aunque "baje fuego del cielo" o rime a la perfección, sea anatema, nuestra lealtad es a la verdad escrita, no al impacto del formato. Segundo, someter las herramientas al Espíritu (1 Juan 4:1): "Probad los espíritus si son de Dios". Esto no significa rechazar la tecnología ni la Inteligencia Artificial: significa nunca dejar de preguntar, con temor de Dios y bajo la guía del Espíritu, si lo que usamos nos lleva a humillarnos delante de Dios en arrepentimiento, o solo entretiene nuestros oídos. Usada así, con el corazón correcto, una herramienta sigue siendo solo eso: una herramienta en manos de quien ya le rinde cuentas a Cristo. Tercero, permanecer en la Senda Antigua (Colosenses 2:6-7): "arraigados y sobreedificados en él". Quien conoce el rostro y la voz del Pastor real por la intimidad en la Palabra, detecta de inmediato al espíritu de imitación, por muy afinada que esté su voz artificial.' }
+                ],
+                retoFinal: [
+                    'Antes de usar una herramienta, de Inteligencia Artificial o cualquier otra, en tu ministerio o tu vida, pregúntate con sinceridad: ¿la estoy usando con temor de Dios y bajo la guía del Espíritu, o busco en ella un atajo al poder, al aplauso o al impacto?',
+                    '¿Conocés la voz del Pastor lo suficiente, por tu propia intimidad con la Palabra, como para reconocer una imitación aunque esté muy bien hecha?'
+                ]
+            }
+        };
+
         const NIVELES_ENCUENTRO_ESPIRITU = [
             {
                 id: 'engendrados_espiritu',
@@ -1315,6 +1369,15 @@ let SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYm
                 // progresoDiscipulado: { [entregaId]: { completado: bool, respuesta: string } }
                 progresoDiscipulado: {},
                 temaActivoId: null,
+                // "Discernimiento" — mismo criterio de reinicio que
+                // progresoDiscipulado: SÍ se reinicia con reiniciarCamino()
+                // (no está en la lista de excepciones preservadas de esa
+                // función) porque, igual que Discipulados, no es un registro
+                // ligado a una estación específica sino contenido formativo
+                // que se vuelve a recorrer con cada estación nueva.
+                // progresoDiscernimiento: { [temaId]: { completado: bool, respuesta: string } }
+                progresoDiscernimiento: {},
+                temaDiscernimientoActivoId: null,
                 // "Un Encuentro con el Espíritu Santo" — respuestas guardadas por
                 // nivel (id de NIVELES_ENCUENTRO_ESPIRITU) y el nivel actualmente
                 // en pantalla. nivelMaxEncuentro es solo un indicador de "siguiente
@@ -1468,6 +1531,8 @@ let SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYm
                 if (this.datos.testimonioEstacion === undefined) this.datos.testimonioEstacion = '';
                 if (!this.datos.progresoDiscipulado) this.datos.progresoDiscipulado = {};
                 if (this.datos.temaActivoId === undefined) this.datos.temaActivoId = null;
+                if (!this.datos.progresoDiscernimiento) this.datos.progresoDiscernimiento = {};
+                if (this.datos.temaDiscernimientoActivoId === undefined) this.datos.temaDiscernimientoActivoId = null;
                 if (this.datos.entregaActivaId === undefined) this.datos.entregaActivaId = null;
                 if (this.datos.pinHash === undefined) this.datos.pinHash = null;
                 if (!this.datos.respuestasEncuentro) this.datos.respuestasEncuentro = {};
@@ -1492,6 +1557,7 @@ let SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYm
                 faseAntesDeEspacios = null;
                 faseAntesDeGracia = null;
                 faseAntesDeQueHariaJesus = null;
+                faseAntesDeDiscernimiento = null;
                 slideBienvenidaGuiada = 0;
 
                 this.guardarTodo();
@@ -1665,6 +1731,8 @@ let SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYm
                         case 'espacios': progHeader.innerText = "Espacios"; break;
                         case 'gracia_biblioteca': progHeader.innerText = "De Gracia Recibisteis, Dad de Gracia"; break;
                         case 'gracia_modulo': progHeader.innerText = (MODULOS_GRACIA_RECIBISTEIS.find(m => m.id === this.datos.moduloActivoGraciaId) || {}).nombre || "De Gracia Recibisteis, Dad de Gracia"; break;
+                        case 'discernimiento_biblioteca': progHeader.innerText = "Discernimiento"; break;
+                        case 'discernimiento_lectura': progHeader.innerText = (TEMAS_DISCERNIMIENTO[this.datos.temaDiscernimientoActivoId] || {}).titulo || "Discernimiento"; break;
                         case 'que_haria_jesus': progHeader.innerText = "¿Qué Haría Jesús?"; break;
                         default: progHeader.innerText = "";
                     }
@@ -1691,6 +1759,8 @@ let SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYm
                     case 'espacios': viewport.innerHTML = VistaEspacios(); break;
                     case 'gracia_biblioteca': viewport.innerHTML = VistaDeGraciaRecibisteis(); break;
                     case 'gracia_modulo': viewport.innerHTML = VistaModuloGracia(); break;
+                    case 'discernimiento_biblioteca': viewport.innerHTML = VistaDiscernimientoBiblioteca(); break;
+                    case 'discernimiento_lectura': viewport.innerHTML = VistaLecturaDiscernimiento(); break;
                     case 'que_haria_jesus': viewport.innerHTML = VistaQueHariaJesus(); break;
                     default: viewport.innerHTML = VistaBienvenida();
                 }
@@ -1907,6 +1977,61 @@ let SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYm
             } else {
                 SendaEstado.irAFase('bienvenida');
             }
+        }
+
+        function irADiscernimiento() {
+            if (!SendaEstado.perfilActivo) {
+                alert("Primero selecciona o crea tu perfil para acceder a este espacio.");
+                return;
+            }
+            const fasesDelModulo = ['discernimiento_biblioteca', 'discernimiento_lectura'];
+            if (!fasesDelModulo.includes(SendaEstado.datos.faseActual)) {
+                faseAntesDeDiscernimiento = SendaEstado.datos.faseActual;
+            }
+            SendaEstado.irAFase('discernimiento_biblioteca');
+        }
+
+        function salirDeDiscernimiento() {
+            if (faseAntesDeDiscernimiento) {
+                const destino = faseAntesDeDiscernimiento;
+                faseAntesDeDiscernimiento = null;
+                SendaEstado.irAFase(destino);
+            } else if (SendaEstado.datos.tipoRuta) {
+                SendaEstado.irAFase('sendero_dashboard');
+            } else {
+                SendaEstado.irAFase('bienvenida');
+            }
+        }
+
+        function irALecturaDiscernimiento(temaId) {
+            SendaEstado.datos.temaDiscernimientoActivoId = temaId;
+            SendaEstado.irAFase('discernimiento_lectura');
+        }
+
+        // Guarda la respuesta al reto final de un tema de Discernimiento.
+        // Misma forma {completado, respuesta} que progresoDiscipulado (a
+        // diferencia de respuestasGracia, que es solo texto plano) — acá SÍ
+        // hace falta 'completado' porque a futuro un tema podría no tener
+        // reto (solo lectura) y aun así marcarse como leído.
+        function guardarRespuestaDiscernimiento(temaId) {
+            const txt = document.getElementById('texto-respuesta-discernimiento');
+            const btn = document.getElementById('btn-guardar-respuesta-discernimiento');
+            if (!txt || !btn) return;
+            if (!SendaEstado.datos.progresoDiscernimiento) SendaEstado.datos.progresoDiscernimiento = {};
+            SendaEstado.datos.progresoDiscernimiento[temaId] = {
+                completado: true,
+                respuesta: textClean(txt.value)
+            };
+            SendaEstado.guardar();
+
+            btn.innerText = "¡Respuesta Guardada!";
+            btn.classList.add('bg-emerald-600');
+            btn.classList.remove('bg-senda-oliva');
+            setTimeout(() => {
+                btn.innerText = "Actualizar mi Respuesta";
+                btn.classList.remove('bg-emerald-600');
+                btn.classList.add('bg-senda-oliva');
+            }, 2000);
         }
 
         function irAModuloGracia(moduloId) {
@@ -3771,9 +3896,10 @@ let SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYm
             }
 
             const espacios = [
-                { icono: '📚', nombre: 'Discipulados', desc: '19 series de enseñanza para tu proceso específico', onclick: 'irAVistaDiscipulados()', destacar: false },
+                { icono: '📚', nombre: 'Discipulados', desc: '23 series de enseñanza para tu proceso específico', onclick: 'irAVistaDiscipulados()', destacar: false },
                 { icono: '🕊️', nombre: 'Encuentro con el Espíritu Santo', desc: '6 niveles de comunión, siguiendo el patrón de Jesús', onclick: 'irAEncuentroEspiritu()', destacar: mostrarSugerenciaEncuentro },
                 { icono: '🎁', nombre: 'De Gracia Recibisteis, Dad de Gracia', desc: '7 módulos para aprender a dar a otros lo que recibiste', onclick: 'irADeGraciaRecibisteis()', destacar: false },
+                { icono: '🔍', nombre: 'Discernimiento', desc: 'Una biblioteca creciente para probar los espíritus bajo el señorío de Cristo', onclick: 'irADiscernimiento()', destacar: false },
                 { icono: '✝️', nombre: '¿Qué Haría Jesús?', desc: 'Pregunta y recibe una guía anclada estrictamente en Su testimonio y la Biblia', onclick: 'irAQueHariaJesus()', destacar: false }
             ];
 
@@ -3893,6 +4019,107 @@ let SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYm
                     <div class="pt-2 flex flex-wrap justify-center gap-3">
                         <button onclick="irADeGraciaRecibisteis()" class="text-xs text-stone-600 hover:text-stone-600 underline">← Biblioteca</button>
                         ${siguiente ? `<button onclick="irAModuloGracia('${siguiente.id}')" class="text-xs text-senda-oliva hover:underline font-semibold">Siguiente: ${siguiente.nombre} →</button>` : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- "Discernimiento": Vista 1, Biblioteca de temas ---
+        function VistaDiscernimientoBiblioteca() {
+            const temas = Object.values(TEMAS_DISCERNIMIENTO).sort((a, b) => a.orden - b.orden);
+            const progreso = SendaEstado.datos.progresoDiscernimiento || {};
+            return `
+                <div class="space-y-8">
+                    <div class="flex justify-start">
+                        <button onclick="salirDeDiscernimiento()" class="text-xs text-stone-600 hover:text-stone-600 underline">← Volver a mi caminar diario</button>
+                    </div>
+                    <div class="text-center space-y-2">
+                        <span class="text-xs uppercase tracking-[0.2em] text-senda-tierra font-semibold">🔍 Discernimiento</span>
+                        <h2 class="serif-title text-3xl md:text-4xl font-medium text-senda-texto">Probad los Espíritus</h2>
+                        <p class="text-sm text-stone-600 font-light max-w-md mx-auto leading-relaxed">"No creáis a todo espíritu, sino probad los espíritus si son de Dios" (1 Juan 4:1). Una biblioteca que va creciendo — cada tema, una lectura completa bajo el señorío de Cristo.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        ${temas.map(tema => {
+                            const completado = progreso[tema.id] && progreso[tema.id].completado;
+                            return `
+                            <button onclick="irALecturaDiscernimiento('${tema.id}')" class="opcion-btn text-left p-6 rounded-[2rem] border-2 border-stone-200 bg-white hover:border-senda-oro/50 hover:shadow-md transition-all space-y-3">
+                                <div class="flex items-start justify-between gap-2">
+                                    <span class="text-3xl block">${tema.icono}</span>
+                                    ${completado ? `<span class="text-[9px] font-bold uppercase tracking-wider px-2 py-1 rounded-full bg-emerald-100 text-emerald-700 flex-shrink-0">✓ Con respuesta</span>` : `<span class="text-[9px] font-bold uppercase tracking-wider px-2 py-1 rounded-full bg-senda-fondo text-senda-tierra flex-shrink-0">Tema ${tema.orden}</span>`}
+                                </div>
+                                <h3 class="serif-title text-xl font-semibold text-senda-texto">${tema.titulo}</h3>
+                                <p class="text-xs text-stone-600 font-light leading-relaxed">${tema.descripcion}</p>
+                            </button>
+                            `;
+                        }).join('')}
+                    </div>
+
+                    <div class="pt-2 text-center">
+                        <button onclick="salirDeDiscernimiento()" class="text-xs text-stone-600 hover:text-stone-600 underline">← Volver a mi caminar diario</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- "Discernimiento": Vista 2, Lectura de un tema ---
+        // A diferencia de Discipulados (3 niveles: biblioteca → mapa → entrega),
+        // acá cada tema es UNA sola lectura con sus secciones en acordeón
+        // (renderAccordionSection) — no hay navegación de "siguiente entrega"
+        // porque no hay entregas, hay un solo reto final por tema.
+        function VistaLecturaDiscernimiento() {
+            const tema = TEMAS_DISCERNIMIENTO[SendaEstado.datos.temaDiscernimientoActivoId];
+            if (!tema) {
+                return `
+                    <div class="text-center space-y-4 py-10">
+                        <p class="text-stone-600">No se encontró ese tema.</p>
+                        <button onclick="irADiscernimiento()" class="text-senda-oliva underline text-sm">← Volver a la Biblioteca</button>
+                    </div>
+                `;
+            }
+            const progresoTema = (SendaEstado.datos.progresoDiscernimiento && SendaEstado.datos.progresoDiscernimiento[tema.id]) || { completado: false, respuesta: '' };
+            const temas = Object.values(TEMAS_DISCERNIMIENTO).sort((a, b) => a.orden - b.orden);
+            const siguiente = temas.find(t => t.orden === tema.orden + 1);
+
+            return `
+                <div class="space-y-6">
+                    <div class="flex flex-wrap justify-between items-center gap-2">
+                        <button onclick="irADiscernimiento()" class="text-xs text-stone-600 hover:text-stone-600 underline">← Biblioteca</button>
+                        <button onclick="salirDeDiscernimiento()" class="text-xs text-stone-600 hover:text-stone-600 underline">Mi Caminar →</button>
+                    </div>
+
+                    <div class="text-center space-y-2">
+                        <span class="text-5xl block">${tema.icono}</span>
+                        <span class="text-xs uppercase tracking-[0.2em] text-senda-tierra font-semibold">Tema ${tema.orden} de ${temas.length}</span>
+                        <h2 class="serif-title text-3xl md:text-4xl font-medium text-senda-texto">${tema.titulo}</h2>
+                    </div>
+
+                    <div class="rounded-[2rem] overflow-hidden border border-stone-200 bg-stone-100 aspect-video flex items-center justify-center">
+                        <span class="text-xs text-stone-600">🎬 Video: ${tema.video_id_biblioteca}</span>
+                    </div>
+
+                    <div class="space-y-3">
+                        ${tema.secciones.map((sec, i) => renderAccordionSection(
+                            `disc_${tema.id}_sec_${i}`,
+                            sec.icono,
+                            sec.subtitulo,
+                            `<p class="text-base text-senda-texto font-light leading-relaxed">${sec.contenido}</p>`,
+                            i === 0
+                        )).join('')}
+                    </div>
+
+                    <div class="bg-senda-cremaFuerte/40 rounded-[2rem] border border-senda-oro/20 p-6 md:p-8 space-y-4">
+                        <span class="text-xs font-bold text-senda-tierra uppercase tracking-widest flex items-center gap-1.5">🙏 Para Llevar a Cristo</span>
+                        ${tema.retoFinal.map(pregunta => `<p class="text-sm text-stone-600 font-light leading-relaxed">${pregunta}</p>`).join('')}
+                        <textarea id="texto-respuesta-discernimiento" placeholder="Escribe aquí..." class="w-full p-4 text-base rounded-2xl border border-stone-200 focus:outline-none focus:border-senda-oro bg-white resize-none h-28 font-light leading-relaxed">${progresoTema.respuesta}</textarea>
+                        <button id="btn-guardar-respuesta-discernimiento" onclick="guardarRespuestaDiscernimiento('${tema.id}')" class="w-full py-4 bg-senda-oliva hover:bg-opacity-95 text-white text-base font-bold rounded-2xl shadow-sm transition-all tracking-wide">
+                            ${progresoTema.respuesta ? "Actualizar mi Respuesta" : "Guardar mi Respuesta"}
+                        </button>
+                    </div>
+
+                    <div class="pt-2 flex flex-wrap justify-center gap-3">
+                        <button onclick="irADiscernimiento()" class="text-xs text-stone-600 hover:text-stone-600 underline">← Biblioteca</button>
+                        ${siguiente ? `<button onclick="irALecturaDiscernimiento('${siguiente.id}')" class="text-xs text-senda-oliva hover:underline font-semibold">Siguiente: ${siguiente.titulo} →</button>` : ''}
                     </div>
                 </div>
             `;
