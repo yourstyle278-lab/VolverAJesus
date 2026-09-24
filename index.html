@@ -3098,26 +3098,46 @@
             }
         }
 
-        // Intenta preferir una voz en español que suene masculina, cuando el
-        // dispositivo expone más de una. La Web Speech API NO tiene una
-        // propiedad de género en SpeechSynthesisVoice — esto es una
-        // aproximación por nombre (best-effort), no una garantía. En Android,
+        // Español natural y neutro para el audio (pedido del cliente: sin acento
+        // argentino ni de España). La Web Speech API expone el acento como el
+        // "lang" de cada voz (es-MX, es-US, es-ES, es-AR...). Se prefieren voces
+        // latinoamericanas neutras y solo se cae a las de España o del Río de la
+        // Plata si es lo ÚNICO que el dispositivo tiene en español. Dentro del
+        // mejor grupo disponible se intenta, best-effort, una voz masculina
+        // (pedido del cliente en v10): la API NO tiene propiedad de género, así
+        // que es una aproximación por nombre, no una garantía. En Android,
         // muchas veces el navegador solo expone UNA voz por idioma, y la voz
         // real la decide la configuración del sistema (Ajustes > Idioma y
-        // entrada > Texto a voz > motor de Google > voz), no la página web.
-        // Si esto no cambia nada en tu teléfono, esa es la vía confiable.
+        // entrada > Texto a voz > motor de Google > idioma: español de Estados
+        // Unidos o de México), no la página web.
+        const IDIOMA_VOZ_POR_DEFECTO = 'es-MX';
+        const GRUPOS_ACENTO_VOZ = [
+            ['es-419', 'es-us', 'es-mx', 'es-co'],
+            ['es-pe', 'es-ve', 'es-ec', 'es-cl', 'es-cr', 'es-pa', 'es-gt', 'es-hn', 'es-ni', 'es-sv', 'es-bo', 'es-do', 'es-pr', 'es-cu']
+        ];
+        function grupoAcentoVoz(voz) {
+            const lang = String(voz.lang || '').toLowerCase().replace('_', '-');
+            const i = GRUPOS_ACENTO_VOZ.findIndex(grupo => grupo.includes(lang));
+            return i === -1 ? GRUPOS_ACENTO_VOZ.length : i;
+        }
+        function esVozMasculina(voz) {
+            const nombre = String(voz.name || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+            if (/female|mujer|femenin/i.test(nombre)) return false;
+            return /\b(male|hombre)\b|masculin|\b(raul|juan|jorge|carlos|luis|alonso|gonzalo|diego|pablo|enrique|alvaro|lorenzo|sebastian|tomas|marcelo|andres)\b/i.test(nombre);
+        }
         function seleccionarVozPreferida() {
             if (!('speechSynthesis' in window)) return null;
             const voces = window.speechSynthesis.getVoices() || [];
             const vocesEspanol = voces.filter(v => v.lang && v.lang.toLowerCase().startsWith('es'));
             if (vocesEspanol.length === 0) return null;
-            const patronMasculino = /male|hombre|masculin|diego|jorge|carlos|pablo|enrique/i;
-            const candidato = vocesEspanol.find(v => patronMasculino.test(v.name));
-            if (candidato) return candidato;
-            // Sin pista por nombre: si hay más de una voz en español, probar
-            // con la segunda — la primera suele ser la voz por defecto del
-            // sistema, que en la mayoría de los dispositivos es femenina.
-            return vocesEspanol.length > 1 ? vocesEspanol[1] : vocesEspanol[0];
+            const mejorGrupo = Math.min(...vocesEspanol.map(grupoAcentoVoz));
+            const candidatas = vocesEspanol.filter(v => grupoAcentoVoz(v) === mejorGrupo);
+            const masculina = candidatas.find(esVozMasculina);
+            if (masculina) return masculina;
+            // Sin pista por nombre: si hay más de una candidata, probar con la
+            // segunda — la primera suele ser la voz por defecto del sistema,
+            // que en la mayoría de los dispositivos es femenina.
+            return candidatas.length > 1 ? candidatas[1] : candidatas[0];
         }
 
         // Lee un texto en voz alta con la Web Speech API del navegador (sin
@@ -3129,9 +3149,11 @@
             if (!('speechSynthesis' in window)) return;
             window.speechSynthesis.cancel();
             const utterance = new SpeechSynthesisUtterance(texto);
-            utterance.lang = 'es-ES';
             utterance.rate = 0.85;
             const vozPreferida = seleccionarVozPreferida();
+            // El idioma sigue a la voz elegida (así el acento es el de esa voz);
+            // sin voz disponible, español de México, el más neutro y extendido.
+            utterance.lang = vozPreferida ? vozPreferida.lang : IDIOMA_VOZ_POR_DEFECTO;
             if (vozPreferida) utterance.voice = vozPreferida;
             const boton = document.getElementById('btn-escuchar-pasaje');
             if (boton) boton.innerText = '⏹ Detener lectura';
