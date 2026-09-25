@@ -16,7 +16,19 @@ declare const Deno: any;
 
 import { corsHeaders } from '../_shared/cors.ts';
 
+// Modelo pedido por el cliente porque openai/gpt-oss-120b empezó a dar error.
+// OJO — Groq lista qwen/qwen3.8-27b como modelo "Preview" (evaluación, no
+// producción; puede discontinuarse sin aviso largo), no "Production" como
+// era gpt-oss-120b. Si en el futuro esto empieza a fallar de nuevo, esa es
+// la primera sospecha antes que ningún otro cambio. Verificar el catálogo
+// vigente en https://console.groq.com/docs/models antes de reemplazarlo.
 const GROQ_MODEL = 'openai/gpt-oss-120b';
+// qwen3.8-27b tiene modo "pensante" (razonamiento) y modo directo. 'none'
+// pide el modo directo: coincide con el pedido de prosa pastoral (no
+// razonamiento paso a paso) y evita que el modelo gaste parte del
+// max_tokens de abajo en pensar en vez de responder — eso ya causó antes
+// el bug de "respuestas cortadas a mitad de oración" con otro modelo.
+const GROQ_REASONING_EFFORT = 'none';
 const LONGITUD_MAXIMA_PREGUNTA = 1000;
 
 // --------------------------------------------------------------------------
@@ -95,6 +107,7 @@ Deno.serve(async (req: Request) => {
       },
       body: JSON.stringify({
         model: GROQ_MODEL,
+        reasoning_effort: GROQ_REASONING_EFFORT,
         temperature: 0.3,
         max_tokens: 1100,
         messages: [

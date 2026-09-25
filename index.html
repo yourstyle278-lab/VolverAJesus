@@ -201,6 +201,7 @@
         </p>
     </footer>
 
+    <script src="config.js"></script>
     <script>
         // ===================================================================
         // LA SENDA ANTIGUA — Estado global de control de flujo de confesión
@@ -249,25 +250,13 @@
         // ===================================================================
         // CONFIGURACIÓN — "¿Qué Haría Jesús?" (backend en Supabase Edge Function)
         // ===================================================================
-        // IMPORTANTE: la API key de Groq NUNCA vive en este archivo. La llamada
-        // real a Groq la hace la función de servidor en
-        // supabase/functions/que-haria-jesus/index.ts (ver ese archivo), donde
-        // la key se guarda como secret de Supabase (fuera del código fuente).
-        // Este archivo cliente solo necesita la URL de esa función y la ANON
-        // KEY del proyecto de Supabase — la anon key SÍ está diseñada para ser
-        // pública/visible en el cliente (protegida por su propia naturaleza,
-        // no es un secreto), a diferencia de la key de Groq.
-        //
-        // Reemplaza TU_PROJECT_REF por el ID de tu proyecto de Supabase
-        // (Project Settings → General → Reference ID), y SUPABASE_ANON_KEY por
-        // tu clave "anon" / "publishable" (Project Settings → API Keys).
-        // NOTA: a propósito 'let' y no 'const' — a diferencia de las constantes
-        // de contenido teológico (de solo lectura), esto es configuración que el
-        // cliente edita a mano, y test_harness.js necesita poder sustituirla
-        // temporalmente para probar la lógica de consultarQueHariaJesus() sin
-        // red real.
-        let SUPABASE_FUNCTION_URL = 'https://TU_PROJECT_REF.supabase.co/functions/v1/que-haria-jesus';
-        let SUPABASE_ANON_KEY = 'PEGA_AQUI_TU_ANON_KEY_DE_SUPABASE';
+        // SUPABASE_FUNCTION_URL y SUPABASE_ANON_KEY ya NO se declaran aquí:
+        // viven en config.js (mismo directorio en el hosting), que se carga
+        // antes que este script (<script src="config.js"> en el <head>).
+        // Así, cada nueva versión de este archivo no pisa los valores reales
+        // — config.js queda tal cual está y solo cambia este archivo.
+        // La API key de Groq NUNCA vive en ningún archivo del cliente: solo
+        // existe como secret dentro de supabase/functions/que-haria-jesus/.
 
         // ===================================================================
         // DATOS TEOLÓGICOS Y DE CONTENIDO PASTORAL
