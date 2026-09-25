@@ -1,0 +1,20 @@
+{
+  "name": "volverajesus",
+  "version": "1.0.0",
+  "description": "VolverAJesucristo",
+  "main": "config.js",
+  "scripts": {
+    "dev": "npx serve .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yourstyle278-lab/VolverAJesus.git"
+  },
+  "keywords": [],
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/yourstyle278-lab/VolverAJesus/issues"
+  },
+  "homepage": "https://github.com/yourstyle278-lab/VolverAJesus#readme"
+}

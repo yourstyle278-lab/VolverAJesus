@@ -28,7 +28,7 @@ const GROQ_MODEL = 'openai/gpt-oss-120b';
 // razonamiento paso a paso) y evita que el modelo gaste parte del
 // max_tokens de abajo en pensar en vez de responder — eso ya causó antes
 // el bug de "respuestas cortadas a mitad de oración" con otro modelo.
-const GROQ_REASONING_EFFORT = 'none';
+const GROQ_REASONING_EFFORT = 'low';
 const LONGITUD_MAXIMA_PREGUNTA = 1000;
 
 // --------------------------------------------------------------------------
@@ -92,7 +92,7 @@ Deno.serve(async (req: Request) => {
     const groqApiKey = Deno.env.get('GROQ_API_KEY');
     if (!groqApiKey) {
       // Esto solo debería verse en desarrollo, si alguien olvidó correr
-      // `supabase secrets set GROQ_API_KEY=...` antes de desplegar.
+      // `supabase secrets set I_KEY=...` antes de desplegar.
       return new Response(
         JSON.stringify({ error: 'GROQ_API_KEY no está configurada en los secrets de Supabase.' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
